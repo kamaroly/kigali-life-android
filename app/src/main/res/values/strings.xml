@@ -6,4 +6,109 @@
     <string name="new_ad">Add new post</string>
     <string name="ad_title">Add your title here</string>
     <string name="ad_description">Your add description</string>
+
+
+    <!-- Names -->
+    <string-array name="Member_names">
+        <item>luxurious 7 seater Sofa on sell</item>
+        <item>Brand new fully furnished 2 bedroom apartments for rent in Gacuriro</item>
+        <item>TOYOTA LANDCRUISER PRADO - 4 X 4 ALL TERRAIN</item>
+        <item>luxurious 7 seater Sofa on sell</item>
+        <item>Brand new fully furnished 2 bedroom apartments for rent in Gacuriro</item>
+        <item>TOYOTA LANDCRUISER PRADO - 4 X 4 ALL TERRAIN</item>
+        <item>luxurious 7 seater Sofa on sell</item>
+        <item>Brand new fully furnished 2 bedroom apartments for rent in Gacuriro</item>
+        <item>TOYOTA LANDCRUISER PRADO - 4 X 4 ALL TERRAIN</item>
+        <item>luxurious 7 seater Sofa on sell</item>
+        <item>Brand new fully furnished 2 bedroom apartments for rent in Gacuriro</item>
+        <item>TOYOTA LANDCRUISER PRADO - 4 X 4 ALL TERRAIN</item>
+        <item>luxurious 7 seater Sofa on sell</item>
+        <item>Brand new fully furnished 2 bedroom apartments for rent in Gacuriro</item>
+        <item>TOYOTA LANDCRUISER PRADO - 4 X 4 ALL TERRAIN</item>
+    </string-array>
+
+    <!-- Pictures -->
+    <array name="profile_pics">
+        <item>@drawable/pavand_pic</item>
+        <item>@drawable/daya_pic</item>
+        <item>@drawable/pavanb_pic</item>
+        <item>@drawable/pavand_pic</item>
+        <item>@drawable/daya_pic</item>
+        <item>@drawable/pavanb_pic</item>
+        <item>@drawable/pavand_pic</item>
+        <item>@drawable/daya_pic</item>
+        <item>@drawable/pavanb_pic</item>
+        <item>@drawable/pavand_pic</item>
+        <item>@drawable/daya_pic</item>
+        <item>@drawable/pavanb_pic</item>
+        <item>@drawable/pavand_pic</item>
+        <item>@drawable/daya_pic</item>
+        <item>@drawable/pavanb_pic</item>
+    </array>
+
+    <!-- Status -->
+    <string-array name="statuses">
+        <item>Due to moving , We are selling a luxurious 7 seater Sofa set very good condition and hardly used.Price is 500,000 Rwf.</item>
+        <item>The 2 bedrooms and 3 bedroom apartment fully furnished apartments are located in secured neighborhood in Gacuriro upper Wood land junction and each\'s rented at 1,000$ and 1,300$ respectively</item>
+        <item>Manufactured in 1998
+Model: Toyota Prado
+Imported from Belgium
+Fuel type : Diesel
+Color : green
+Number Plate : RAD</item>
+        <item>Due to moving , We are selling a luxurious 7 seater Sofa set very good condition and hardly used.Price is 500,000 Rwf.</item>
+        <item>The 2 bedrooms and 3 bedroom apartment fully furnished apartments are located in secured neighborhood in Gacuriro upper Wood land junction and each\'s rented at 1,000$ and 1,300$ respectively</item>
+        <item>Manufactured in 1998
+Model: Toyota Prado
+Imported from Belgium
+Fuel type : Diesel
+Color : green
+Number Plate : RAD</item>
+        <item>Due to moving , We are selling a luxurious 7 seater Sofa set very good condition and hardly used.Price is 500,000 Rwf.</item>
+        <item>The 2 bedrooms and 3 bedroom apartment fully furnished apartments are located in secured neighborhood in Gacuriro upper Wood land junction and each\'s rented at 1,000$ and 1,300$ respectively</item>
+        <item>Manufactured in 1998
+Model: Toyota Prado
+Imported from Belgium
+Fuel type : Diesel
+Color : green
+Number Plate : RAD</item>
+        <item>Due to moving , We are selling a luxurious 7 seater Sofa set very good condition and hardly used.Price is 500,000 Rwf.</item>
+        <item>The 2 bedrooms and 3 bedroom apartment fully furnished apartments are located in secured neighborhood in Gacuriro upper Wood land junction and each\'s rented at 1,000$ and 1,300$ respectively</item>
+        <item>Manufactured in 1998
+Model: Toyota Prado
+Imported from Belgium
+Fuel type : Diesel
+Color : green
+Number Plate : RAD</item>
+        <item>Due to moving , We are selling a luxurious 7 seater Sofa set very good condition and hardly used.Price is 500,000 Rwf.</item>
+        <item>The 2 bedrooms and 3 bedroom apartment fully furnished apartments are located in secured neighborhood in Gacuriro upper Wood land junction and each\'s rented at 1,000$ and 1,300$ respectively</item>
+        <item>Manufactured in 1998
+Model: Toyota Prado
+Imported from Belgium
+Fuel type : Diesel
+Color : green
+Number Plate : RAD</item>
+    </string-array>
+
+    <!-- contact type -->
+    <string-array name="contactTypes">
+        <item>100,00,00 Rwf</item>
+        <item>200 $</item>
+        <item>1200 $</item>
+        <item>100,00,00 Rwf</item>
+        <item>200 $</item>
+        <item>1200 $</item>
+        <item>100,00,00 Rwf</item>
+        <item>200 $</item>
+        <item>1200 $</item>
+        <item>100,00,00 Rwf</item>
+        <item>200 $</item>
+        <item>1200 $</item>
+        <item>100,00,00 Rwf</item>
+        <item>200 $</item>
+        <item>1200 $</item>
+
+
+    </string-array>
+    <string name="title_activity_ad_details">AdDetailsActivity</string>
 </resources>

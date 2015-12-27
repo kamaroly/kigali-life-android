@@ -9,20 +9,22 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="app.com.example.lambertkamaro.kigalilife.MainActivity">
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/new_ad"
-        android:id="@+id/new_ad"
-        android:layout_alignParentBottom="true" />
-
     <ListView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/adsList"
         android:layout_alignParentTop="true"
         android:layout_alignRight="@+id/new_ad"
         android:layout_alignEnd="@+id/new_ad"
         android:choiceMode="singleChoice" />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableBottom="@android:drawable/ic_input_add"
+        android:id="@+id/new_ad"
+        android:width="20dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>

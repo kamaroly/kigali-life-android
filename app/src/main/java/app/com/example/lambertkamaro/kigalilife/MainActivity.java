@@ -1,6 +1,7 @@
 package app.com.example.lambertkamaro.kigalilife;
 
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -12,20 +13,33 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import app.com.example.lambertkamaro.kigalilife.Ads.AdAdaptor;
+import app.com.example.lambertkamaro.kigalilife.Ads.AdItem;
+
 
 public class MainActivity extends ActionBarActivity {
 
     /** Instance for our data **/
     public  static Button newAdButton;
 
-    /** Contains our list view **/
-    public  static ListView adsListView;
+    /** Array to hold member names **/
+    String[] memberNames;
 
-    /** Initial data for our list View of ads*/
-    public static   String[] ADSLIST = new String[]{
-            "Selling Car","House fore Rent","MacBook pro 13"
-    };
+    /** Array to hold profile pictures **/
+    TypedArray profilePics;
 
+    /** Array to hold status **/
+    String[] statuses;
+
+    /** Array to hold contact type **/
+    String[] contactTypes;
+
+    /** Data transfer object for our ad item **/
+    List<AdItem> adItems;
+    ListView   adsListView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,20 +52,55 @@ public class MainActivity extends ActionBarActivity {
      * Show list view
      */
     public  void adsListViewMethod(){
-        // Populating our list view
+        adItems = new ArrayList<AdItem>();
+        memberNames = getResources().getStringArray(R.array.Member_names);
+        statuses    = getResources().getStringArray(R.array.statuses);
+        contactTypes = getResources().getStringArray(R.array.contactTypes);
+        profilePics  = getResources().obtainTypedArray(R.array.profile_pics);
+
+        // Loop through all this members
+        for (int i = 0 ; i< memberNames.length; i++)
+        {
+            AdItem item = new AdItem(
+                                    memberNames[i],
+                                    profilePics.getResourceId(i,-1),
+                                    statuses[i],
+                                    contactTypes[i]
+                                    );
+
+            // Add this Item to list view collection
+            adItems.add(item);
+        }
+
         adsListView = (ListView) findViewById(R.id.adsList);
-        ArrayAdapter<String> adsAdaptor = new ArrayAdapter<String>(this,R.layout.ad_item,ADSLIST);
+        AdAdaptor adsAdaptor = new AdAdaptor(this,adItems);
+
+        // Connect list view to adaption
         adsListView.setAdapter(adsAdaptor);
 
-        // Add action when someone clicks on the item
-        adsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        // Recycle profile picture
+        profilePics.recycle();
+
+        adsListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                    String value = (String) adsListView.getItemAtPosition(position);
-                Toast.makeText(MainActivity.this,"Position : "+position+" value :"+value,Toast.LENGTH_LONG).show();
+            public  void onItemClick(AdapterView<?> adapterView,View view,int position, long id){
+                Intent detailIntent = new Intent(MainActivity.this,AdDetailsActivity.class);
+                String member_name = adItems.get(position).getMemberName();
+                String status = adItems.get(position).getStatus();
+                String contactType = adItems.get(position).getContactType();
+                // Let's add data to our Intent so that we may know which one to show
+                detailIntent.putExtra("position",position);
+                detailIntent.putExtra("name",member_name);
+                detailIntent.putExtra("status",status);
+                detailIntent.putExtra("contactType",contactType);
+                startActivity(detailIntent);
             }
         });
+
     }
+
+
+
     /**
      * method to listen when someone clicks on the new ad
      */

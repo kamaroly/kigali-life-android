@@ -19,7 +19,10 @@
         </activity>
         <activity
             android:name=".NewAdActivity"
-            android:label="@string/title_activity_new_ad"></activity>
+            android:label="@string/title_activity_new_ad" />
+        <activity
+            android:name=".AdDetailsActivity"
+            android:label="@string/title_activity_ad_details"></activity>
     </application>
 
 </manifest>
