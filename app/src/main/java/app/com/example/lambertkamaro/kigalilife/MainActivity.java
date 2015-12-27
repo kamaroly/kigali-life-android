@@ -6,19 +6,52 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.Toast;
 
 
 public class MainActivity extends ActionBarActivity {
 
+    /** Instance for our data **/
     public  static Button newAdButton;
+
+    /** Contains our list view **/
+    public  static ListView adsListView;
+
+    /** Initial data for our list View of ads*/
+    public static   String[] ADSLIST = new String[]{
+            "Selling Car","House fore Rent","MacBook pro 13"
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        this.adsListViewMethod();
         this.onClickNewAdListener();
     }
 
+    /**
+     * Show list view
+     */
+    public  void adsListViewMethod(){
+        // Populating our list view
+        adsListView = (ListView) findViewById(R.id.adsList);
+        ArrayAdapter<String> adsAdaptor = new ArrayAdapter<String>(this,R.layout.ad_item,ADSLIST);
+        adsListView.setAdapter(adsAdaptor);
+
+        // Add action when someone clicks on the item
+        adsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                    String value = (String) adsListView.getItemAtPosition(position);
+                Toast.makeText(MainActivity.this,"Position : "+position+" value :"+value,Toast.LENGTH_LONG).show();
+            }
+        });
+    }
     /**
      * method to listen when someone clicks on the new ad
      */
