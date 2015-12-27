@@ -78,7 +78,9 @@ public class AdAdaptor extends BaseAdapter {
             holder.contactType = (TextView) convertView.findViewById(R.id.contact_type);
 
             convertView.setTag(holder);
-        } else {
+        }
+        else
+        {
             holder = (ViewHolder) convertView.getTag();
         }
 

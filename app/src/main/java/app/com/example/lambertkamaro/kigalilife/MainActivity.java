@@ -85,9 +85,11 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public  void onItemClick(AdapterView<?> adapterView,View view,int position, long id){
                 Intent detailIntent = new Intent(MainActivity.this,AdDetailsActivity.class);
+
                 String member_name = adItems.get(position).getMemberName();
                 String status = adItems.get(position).getStatus();
                 String contactType = adItems.get(position).getContactType();
+
                 // Let's add data to our Intent so that we may know which one to show
                 detailIntent.putExtra("position",position);
                 detailIntent.putExtra("name",member_name);
