@@ -93,8 +93,9 @@ public class MainActivity extends ActionBarActivity {
                 detailIntent.putExtra("position",position);
                 detailIntent.putExtra("name",member_name);
                 detailIntent.putExtra("status",status);
-                detailIntent.putExtra("contactType",contactType);
+                detailIntent.putExtra("contactType", contactType);
                 startActivity(detailIntent);
+
             }
         });
 
@@ -117,12 +118,20 @@ public class MainActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_new_add) {
-            Intent newAd = new Intent(MainActivity.this,NewAdActivity.class);
-            startActivity(newAd);
-            return true;
+        switch (id) {
+            case R.id.action_new_add:
+                Intent newAd = new Intent(MainActivity.this,NewAdActivity.class);
+                startActivity(newAd);
+                return true;
+            case R.id.action_profile:
+                Intent profile = new Intent(MainActivity.this,ProfileActivity.class);
+                startActivity(profile);
+                return true;
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 }

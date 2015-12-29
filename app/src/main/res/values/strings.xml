@@ -5,6 +5,7 @@
     <string name="welcome_message">Welcome to Kigali Life App</string>
     <string name="new_ad">Add new</string>
     <string name="action_new_ad">New add</string>
+    <string name="action_profile">Profile</string>
     <string name="ad_title">Add your title here</string>
     <string name="ad_description">Your add description</string>
     <string name="title_activity_ad_details">Ads details</string>
