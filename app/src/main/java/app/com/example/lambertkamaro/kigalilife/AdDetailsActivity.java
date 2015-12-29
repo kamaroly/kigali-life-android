@@ -21,7 +21,13 @@ public class AdDetailsActivity extends ActionBarActivity {
         TextView body  = (TextView)findViewById(R.id.detailBody);
 
         Intent item = getIntent();
-        title.setText(item.getStringExtra("name"));
-        body.setText(item.getStringExtra("status"));
+        String name = item.getStringExtra("name");
+        String status = item.getStringExtra("status");
+        /** Change this activity title to the current name **/
+        setTitle(name);
+
+        /** Update activity layout **/
+        title.setText(name);
+        body.setText(status);
     }
 }

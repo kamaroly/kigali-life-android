@@ -6,7 +6,7 @@
     <string name="new_ad">Add new post</string>
     <string name="ad_title">Add your title here</string>
     <string name="ad_description">Your add description</string>
-
+    <string name="title_activity_ad_details">Ads details</string>
 
     <!-- Names -->
     <string-array name="Member_names">
@@ -110,5 +110,4 @@ Number Plate : RAD</item>
 
 
     </string-array>
-    <string name="title_activity_ad_details">AdDetailsActivity</string>
 </resources>
