@@ -45,7 +45,6 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.adsListViewMethod();
-        this.onClickNewAdListener();
     }
 
     /**
@@ -103,26 +102,6 @@ public class MainActivity extends ActionBarActivity {
 
 
 
-    /**
-     * method to listen when someone clicks on the new ad
-     */
-    public void onClickNewAdListener(){
-        // Locate button in activity main
-        newAdButton = (Button) findViewById(R.id.new_ad);
-
-        // Capture button click
-        newAdButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                // Start newAddActivity class
-                Intent newAdIntent = new Intent(MainActivity.this,NewAdActivity.class);
-                startActivity(newAdIntent);
-            }
-        });
-
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -138,7 +117,9 @@ public class MainActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_new_add) {
+            Intent newAd = new Intent(MainActivity.this,NewAdActivity.class);
+            startActivity(newAd);
             return true;
         }
 
