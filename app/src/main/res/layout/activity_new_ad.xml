@@ -7,32 +7,46 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="app.com.example.lambertkamaro.kigalilife.NewAdActivity">
+    tools:context=".Activities.NewAdActivity">
 
+    <!-- Defining the subject edit text input -->
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/ad_title"
-        android:id="@+id/AdTitle"
+        android:id="@+id/editTextSubject"
+        android:layout_margin="5dp"
+        android:hint="@string/subject"
+        android:singleLine="true"/>
+
+    <!-- Defining message / description of the ad -->
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:id="@+id/editTextMessage"
+        android:layout_below="@+id/editTextSubject"
+        android:layout_margin="5dp"
+        android:gravity="top"
+        android:hint="@string/message"
+        android:inputType="textImeMultiLine"
         />
 
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="New Text"
-        android:id="@+id/textView"
-        android:layout_above="@+id/button"
-        android:layout_below="@+id/AdTitle"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
+    <!-- Defining send mail button -->
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/button"
-        android:layout_below="@+id/AdTitle"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:id="@+id/buttonSend"
+        android:layout_below="@+id/editTextMessage"
+        android:layout_margin="5dp"
+        android:text="@string/send"
+        />
+    <!-- Defining Attachment button -->
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:id="@+id/buttonAttachment"
+        android:layout_below="@+id/editTextMessage"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="125dp" />
+        android:layout_margin="5dp"
+        android:text="@string/attachment"/>
+
 </RelativeLayout>

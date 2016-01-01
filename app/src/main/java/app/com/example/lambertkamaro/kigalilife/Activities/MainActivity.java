@@ -1,4 +1,4 @@
-package app.com.example.lambertkamaro.kigalilife;
+package app.com.example.lambertkamaro.kigalilife.Activities;
 
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -8,16 +8,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import app.com.example.lambertkamaro.kigalilife.Ads.AdAdaptor;
 import app.com.example.lambertkamaro.kigalilife.Ads.AdItem;
+import app.com.example.lambertkamaro.kigalilife.R;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -122,10 +121,6 @@ public class MainActivity extends ActionBarActivity {
             case R.id.action_new_add:
                 Intent newAd = new Intent(MainActivity.this,NewAdActivity.class);
                 startActivity(newAd);
-                return true;
-            case R.id.action_profile:
-                Intent profile = new Intent(MainActivity.this,ProfileActivity.class);
-                startActivity(profile);
                 return true;
             case android.R.id.home:
                 onBackPressed();

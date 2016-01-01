@@ -1,4 +1,4 @@
-package app.com.example.lambertkamaro.kigalilife;
+package app.com.example.lambertkamaro.kigalilife.Activities;
 
 import android.app.ActionBar;
 import android.content.Intent;
@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import app.com.example.lambertkamaro.kigalilife.R;
 
 public class AdDetailsActivity extends ActionBarActivity {
 

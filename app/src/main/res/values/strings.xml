@@ -9,7 +9,10 @@
     <string name="ad_title">Add your title here</string>
     <string name="ad_description">Your add description</string>
     <string name="title_activity_ad_details">Ads details</string>
-
+    <string name="subject">Subject</string>
+    <string name="message">Type your message</string>
+    <string name="send">Send</string>
+    <string name="attachment">Attachment</string>
     <!-- Names -->
     <string-array name="Member_names">
         <item>luxurious 7 seater Sofa on sell</item>
