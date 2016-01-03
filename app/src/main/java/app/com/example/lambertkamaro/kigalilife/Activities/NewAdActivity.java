@@ -3,7 +3,6 @@ package app.com.example.lambertkamaro.kigalilife.Activities;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,7 +15,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -50,7 +48,6 @@ import java.util.Date;
 import java.util.Properties;
 
 import app.com.example.lambertkamaro.kigalilife.R;
-import app.com.example.lambertkamaro.kigalilife.Services.MailService;
 
 import static javax.mail.internet.InternetAddress.parse;
 
@@ -67,7 +64,7 @@ public class NewAdActivity extends ActionBarActivity implements OnClickListener{
     /** Declaring buttons **/
     Button   buttonSend,buttonAttachment;
     /** Strings **/
-    String email,subject,message;
+    String email,subject,messageBody;
     String attachmentFile = null;
 
 
@@ -223,8 +220,8 @@ public class NewAdActivity extends ActionBarActivity implements OnClickListener{
      */
     public  void  sendMail(){
           email = "kamaroly@gmail.com";
-          subject = "Sending new ADs";
-          message = "Testing message for android kigali life";
+          subject = editTextSubText.getText().toString();
+          messageBody = ediTextMessage.getText().toString();
 
         try {
 
@@ -262,37 +259,54 @@ public class NewAdActivity extends ActionBarActivity implements OnClickListener{
 
         @Override
         protected String doInBackground(String... strings) {
+
             try {
 
+                // Create a default MimeMessage object.
                 Message message =  new MimeMessage(session);
+
+                // Set From: header field of the header.
                 message.setFrom(new InternetAddress(from));
 
+                // Set To: header field of the header.
                 InternetAddress[] addressTo = new InternetAddress[to.length];
-
                 for (int i = 0; i < to.length; i++) {
                     addressTo[i] = new InternetAddress(to[i]);
                 }
                 message.setRecipients(MimeMessage.RecipientType.TO, addressTo);
 
-                message.setSubject("Testing kigalilife android app");
-                message.setSentDate(new Date());
+                // Set Subject: header field
+                message.setSubject(subject);
 
-                // setup message body
-                BodyPart messageBodyPart = new MimeBodyPart();
-                // Create the message part
-                messageBodyPart.setText("Body of Java android app");
-                // Create a multipart message
-                Multipart multipart = new MimeMultipart();
-                // Set text message part
-                multipart.addBodyPart(messageBodyPart);
-
-                // if we have attachment then add it here
+                // If we have attachment then process it
                 if (attachmentFile != null) {
+                    // Create the message part
+                    BodyPart messageBodyPart = new MimeBodyPart();
+
+                    // Fill the message
+                    messageBodyPart.setText(messageBody);
+
+                    // Create a multipar message
+                    Multipart multipart = new MimeMultipart();
+
+                    // Set text message part
+                    multipart.addBodyPart(messageBodyPart);
+
                     // Part two is attachment
+                    messageBodyPart = new MimeBodyPart();
+
                     DataSource source = new FileDataSource(attachmentFile);
                     messageBodyPart.setDataHandler(new DataHandler(source));
                     messageBodyPart.setFileName(attachmentFile);
                     multipart.addBodyPart(messageBodyPart);
+
+                    // Send the complete message parts
+                    message.setContent(multipart);
+                }
+                else{ // We don't have attachment then send just a plain text email
+
+                    // Send the actual HTML message, as big as you like
+                    message.setContent(messageBody, "text/html" );
                 }
                 // send email
                 Transport.send(message);
@@ -310,8 +324,13 @@ public class NewAdActivity extends ActionBarActivity implements OnClickListener{
 
         @Override
         protected void onPostExecute(String results) {
-            progressDialog.dismiss();
 
+            // Remove all previous used content
+            ediTextMessage.setText(null);
+            editTextSubText.setText(null);
+            ivImage.setImageBitmap(null);
+
+            progressDialog.dismiss();
             Toast.makeText(getApplicationContext(),"Message sent",Toast.LENGTH_SHORT).show();
 
         }
