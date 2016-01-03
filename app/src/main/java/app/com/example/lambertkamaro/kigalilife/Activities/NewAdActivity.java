@@ -1,12 +1,19 @@
 package app.com.example.lambertkamaro.kigalilife.Activities;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
+import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -15,8 +22,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.mail.Authenticator;
 import javax.mail.BodyPart;
 import javax.mail.Message;
@@ -28,37 +39,43 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Properties;
 
 import app.com.example.lambertkamaro.kigalilife.R;
+import app.com.example.lambertkamaro.kigalilife.Services.MailService;
 
 import static javax.mail.internet.InternetAddress.parse;
 
 public class NewAdActivity extends ActionBarActivity implements OnClickListener{
 
+    private static final int REQUEST_CAMERA = 100;
+    private  static  final int SELECT_FILE = 101;
     Session session = null;
     ProgressDialog progressDialog = null;
     /** Declare edit Texts inputs for our interface**/
     EditText editTextSubText, ediTextMessage;
+    ImageView ivImage;
 
     /** Declaring buttons **/
     Button   buttonSend,buttonAttachment;
     /** Strings **/
-    String email,subject,message,attachmentFile;
+    String email,subject,message;
+    String attachmentFile = null;
 
-    Uri URI = null;
 
-    private  static  final int PICK_FROM_GALLERY = 101;
-
-    int columnIndex;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_ad);
         this.addBackButtonInActionBar();
-
         this.newAdManager();
     }
 
@@ -69,66 +86,147 @@ public class NewAdActivity extends ActionBarActivity implements OnClickListener{
         buttonSend = (Button) findViewById(R.id.buttonSend);
         buttonAttachment = (Button) findViewById(R.id.buttonAttachment);
 
+        ivImage = (ImageView) findViewById(R.id.ivImage);
+
         buttonSend.setOnClickListener(this);
         buttonAttachment.setOnClickListener(this);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_CAMERA) {
 
-        //Check if we need to pick something from the gallery
-        if (requestCode == PICK_FROM_GALLERY && resultCode == RESULT_OK){
+                Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
+                this.getImageFromCamera(thumbnail);
+            }else if (requestCode == SELECT_FILE) {
 
-            Uri selectedImage = data.getData();
-            String[] filePathColumn = {MediaStore.Images.Media.DATA};
-
-            Cursor cursor = getContentResolver().query(selectedImage,filePathColumn,null,null,null);
-            cursor.moveToFirst();
-
-            columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            attachmentFile = cursor.getString(columnIndex);
-
-            Log.e("Attachment path",attachmentFile);
-
-            URI = Uri.parse("file://"+attachmentFile);
-            cursor.close();
+                this.getImageFromGallery(data);
+            }
+         }
         }
+
+    /**
+     * This method handles image picked from the camera on activity result
+     * @param data
+     */
+    public  void getImageFromCamera(Bitmap data)
+    {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        data.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
+
+        String filename = System.currentTimeMillis() + ".jpg";
+        File destination = new File(Environment.getExternalStorageDirectory(),filename);
+
+        FileOutputStream fo;
+
+        try {
+            destination.createNewFile();
+            fo = new FileOutputStream(destination);
+            fo.write(bytes.toByteArray());
+            fo.close();
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        ivImage.setImageBitmap(data);
+        // Set global attachment path
+        attachmentFile = filename;
+    }
+
+    /**
+     * This method handles image picked from the mediaStore
+     * @param data
+     */
+    public  void getImageFromGallery(Intent data){
+        Uri selectedImageUri = data.getData();
+        String[] projection = {MediaStore.MediaColumns.DATA};
+        CursorLoader cursorLoader = new CursorLoader(this, selectedImageUri, projection, null, null,
+                null);
+        Cursor cursor = cursorLoader.loadInBackground();
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+        cursor.moveToFirst();
+
+        String selectedImagePath = cursor.getString(column_index);
+
+        Bitmap bm;
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(selectedImagePath, options);
+
+        // Set global attachment path
+        attachmentFile = selectedImagePath;
+
+        final int REQUIRED_SIZE = 200;
+
+        int scale = 1;
+
+        while (options.outWidth / scale / 2 >= REQUIRED_SIZE
+                && options.outHeight / scale / 2 >= REQUIRED_SIZE)
+            scale *= 2;
+        options.inSampleSize = scale;
+        options.inJustDecodeBounds = false;
+        bm = BitmapFactory.decodeFile(selectedImagePath, options);
+
+        ivImage.setImageBitmap(bm);
     }
 
     /**
      * Method to open gallery
      */
-    public  void openGallery(){
-     Intent galleryIntent = new Intent();
-        galleryIntent.setType("image/*");
-        galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
-        galleryIntent.putExtra("return-data", true);
+    private void selectImage() {
+        final CharSequence[] items = { "Take Photo", "Choose from Library", "Cancel" };
 
-        startActivityForResult(Intent.createChooser(galleryIntent,"Complete action using"),PICK_FROM_GALLERY);
+        AlertDialog.Builder builder = new AlertDialog.Builder(NewAdActivity.this);
+        builder.setTitle("Add Photo!");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item)
+            {
+                // Does use want to take a picture ?
+                if (items[item].equals("Take Photo"))
+                {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                    startActivityForResult(intent, REQUEST_CAMERA);
+                }
+                // User want to take image from the library
+                else if (items[item].equals("Choose from Library"))
+                {
+                    Intent intent = new Intent(
+                            Intent.ACTION_PICK,
+                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                    intent.setType("image/*");
+                    startActivityForResult(
+                            Intent.createChooser(intent, "Select File"),
+                            SELECT_FILE);
+                    // Use want to cancel this
+                } else if (items[item].equals("Cancel")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
     }
+
+
 
     /**
      * Sending Email method
      */
     public  void  sendMail(){
+          email = "kamaroly@gmail.com";
+          subject = "Sending new ADs";
+          message = "Testing message for android kigali life";
+
         try {
-            email = "kamaroly@gmail.com";
-            subject = editTextSubText.getText().toString();
-            message = ediTextMessage.getText().toString();
-
-            // Make an intent to send email
-            final Intent emailIntent = new Intent(Intent.ACTION_SEND);
-            emailIntent.setType("plain/text");
-            emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{email});
-            emailIntent.putExtra(Intent.EXTRA_SUBJECT,subject);
-
-            // If we have an attachment let's add it
-            if (URI != null){
-                emailIntent.putExtra(Intent.EXTRA_STREAM,URI);
-            }
-
-            // Add message
-            emailIntent.putExtra(Intent.EXTRA_TEXT, message);
 
             Properties props = new Properties();
             props.put("mail.smtp.host","smtp.gmail.com");
@@ -156,7 +254,7 @@ public class NewAdActivity extends ActionBarActivity implements OnClickListener{
     }
 
     /**
-     *
+     * Class to process images
      */
     public class RetrieveFeedTask extends AsyncTask<String,Void, String> {
         private String[] to = {"kamaroly@gmail.com"};
@@ -181,14 +279,21 @@ public class NewAdActivity extends ActionBarActivity implements OnClickListener{
 
                 // setup message body
                 BodyPart messageBodyPart = new MimeBodyPart();
+                // Create the message part
                 messageBodyPart.setText("Body of Java android app");
+                // Create a multipart message
+                Multipart multipart = new MimeMultipart();
+                // Set text message part
+                multipart.addBodyPart(messageBodyPart);
 
-                // Put parts in message
-                Log.i("From ",from);
-                Log.i("To ",to[0]);
-                Log.i("Message ","Body of Java android app");
-
-
+                // if we have attachment then add it here
+                if (attachmentFile != null) {
+                    // Part two is attachment
+                    DataSource source = new FileDataSource(attachmentFile);
+                    messageBodyPart.setDataHandler(new DataHandler(source));
+                    messageBodyPart.setFileName(attachmentFile);
+                    multipart.addBodyPart(messageBodyPart);
+                }
                 // send email
                 Transport.send(message);
             }
@@ -212,12 +317,11 @@ public class NewAdActivity extends ActionBarActivity implements OnClickListener{
         }
     }
 
-
     @Override
     public void onClick(View view) {
         // Determine the clicked on view
         if (view == buttonAttachment){
-            openGallery();
+            selectImage();
         }
 
         if (view == buttonSend){

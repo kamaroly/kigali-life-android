@@ -6,8 +6,8 @@
         android:id="@+id/action_new_add"
         android:orderInCategory="100"
         android:title="@string/action_new_ad"
-        android:icon="@android:drawable/ic_menu_add"
-        android:actionLayout="@layout/activity_new_ad"
-        app:showAsAction="always" />
+    android:icon="@android:drawable/ic_input_add"
+    android:actionLayout="@layout/activity_new_ad"
+    app:showAsAction="always" />
 
-</menu>
+    </menu>
