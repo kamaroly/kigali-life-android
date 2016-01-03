@@ -29,13 +29,29 @@
         android:hint="@string/message"
         android:inputType="textImeMultiLine"
         />
+    <!-- image views -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_below="@+id/editTextMessage"
+        android:orientation="vertical"
+        android:id="@+id/imageLists"
+        android:padding="10dp" >
 
+        <ImageView
+            android:id="@+id/ivImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <!-- Buttons -->
     <!-- Defining send mail button -->
     <Button
         android:layout_width="100dp"
         android:layout_height="50dp"
         android:id="@+id/buttonSend"
-        android:layout_below="@+id/editTextMessage"
+        android:layout_below="@+id/imageLists"
         android:layout_margin="5dp"
         android:text="@string/send"
         />
@@ -44,23 +60,9 @@
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:id="@+id/buttonAttachment"
-        android:layout_below="@+id/editTextMessage"
+        android:layout_below="@+id/imageLists"
         android:layout_alignParentRight="true"
         android:layout_margin="5dp"
         android:text="@string/attachment"/>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_below="@+id/editTextMessage"
-        android:orientation="vertical"
-        android:padding="10dp" >
-
-        <ImageView
-            android:id="@+id/ivImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_launcher" />
-    </LinearLayout>
 
 </RelativeLayout>
