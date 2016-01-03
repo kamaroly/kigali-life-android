@@ -1,106 +1,127 @@
 package app.com.example.lambertkamaro.kigalilife.Activities;
-
-import android.content.Intent;
-import android.content.res.TypedArray;
-import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ListView;
+import app.com.example.lambertkamaro.kigalilife.Adapters.CustomListAdapter;
+import app.com.example.lambertkamaro.kigalilife.Controllers.AppController;
+import app.com.example.lambertkamaro.kigalilife.Models.Movie;
+import app.com.example.lambertkamaro.kigalilife.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import app.com.example.lambertkamaro.kigalilife.Ads.AdAdaptor;
-import app.com.example.lambertkamaro.kigalilife.Ads.AdItem;
-import app.com.example.lambertkamaro.kigalilife.R;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.ListView;
 
-public class MainActivity extends ActionBarActivity {
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonArrayRequest;
 
-    /** Instance for our data **/
-    public  static Button newAdButton;
+public class MainActivity extends Activity {
+    // Log tag
+    private static final String TAG = MainActivity.class.getSimpleName();
 
-    /** Array to hold member names **/
-    String[] memberNames;
+    // Movies json url
+    private static final String url = "http://api.androidhive.info/json/movies.json";
+    private ProgressDialog pDialog;
+    private List<Movie> movieList = new ArrayList<Movie>();
+    private ListView listView;
+    private CustomListAdapter adapter;
 
-    /** Array to hold profile pictures **/
-    TypedArray profilePics;
-
-    /** Array to hold status **/
-    String[] statuses;
-
-    /** Array to hold contact type **/
-    String[] contactTypes;
-
-    /** Data transfer object for our ad item **/
-    List<AdItem> adItems;
-    ListView   adsListView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        this.adsListViewMethod();
-    }
 
-    /**
-     * Show list view
-     */
-    public  void adsListViewMethod(){
-        adItems = new ArrayList<AdItem>();
-        memberNames = getResources().getStringArray(R.array.Member_names);
-        statuses    = getResources().getStringArray(R.array.statuses);
-        contactTypes = getResources().getStringArray(R.array.contactTypes);
-        profilePics  = getResources().obtainTypedArray(R.array.profile_pics);
+        listView = (ListView) findViewById(R.id.list);
+        adapter = new CustomListAdapter(this, movieList);
+        listView.setAdapter(adapter);
 
-        // Loop through all this members
-        for (int i = 0 ; i< memberNames.length; i++)
-        {
-            AdItem item = new AdItem(
-                                    memberNames[i],
-                                    profilePics.getResourceId(i,-1),
-                                    statuses[i],
-                                    contactTypes[i]
-                                    );
+        pDialog = new ProgressDialog(this);
+        // Showing progress dialog before making http request
+        pDialog.setMessage("Loading...");
+        pDialog.show();
 
-            // Add this Item to list view collection
-            adItems.add(item);
-        }
+        // changing action bar color
+        getActionBar().setBackgroundDrawable(
+                new ColorDrawable(Color.parseColor("#1b1b1b")));
 
-        adsListView = (ListView) findViewById(R.id.adsList);
-        AdAdaptor adsAdaptor = new AdAdaptor(this,adItems);
+        // Creating volley request obj
+        JsonArrayRequest movieReq = new JsonArrayRequest(url,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        Log.d(TAG, response.toString());
+                        hidePDialog();
 
-        // Connect list view to adaption
-        adsListView.setAdapter(adsAdaptor);
+                        // Parsing json
+                        for (int i = 0; i < response.length(); i++) {
+                            try {
 
-        // Recycle profile picture
-        profilePics.recycle();
+                                JSONObject obj = response.getJSONObject(i);
+                                Movie movie = new Movie();
+                                movie.setTitle(obj.getString("title"));
+                                movie.setThumbnailUrl(obj.getString("image"));
+                                movie.setRating(((Number) obj.get("rating"))
+                                        .doubleValue());
+                                movie.setYear(obj.getInt("releaseYear"));
 
-        adsListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+                                // Genre is json array
+                                JSONArray genreArry = obj.getJSONArray("genre");
+                                ArrayList<String> genre = new ArrayList<String>();
+                                for (int j = 0; j < genreArry.length(); j++) {
+                                    genre.add((String) genreArry.get(j));
+                                }
+                                movie.setGenre(genre);
+
+                                // adding movie to movies array
+                                movieList.add(movie);
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+
+                        // notifying list adapter about data changes
+                        // so that it renders the list view with updated data
+                        adapter.notifyDataSetChanged();
+                    }
+                }, new Response.ErrorListener() {
             @Override
-            public  void onItemClick(AdapterView<?> adapterView,View view,int position, long id){
-                Intent detailIntent = new Intent(MainActivity.this,AdDetailsActivity.class);
-
-                String member_name = adItems.get(position).getMemberName();
-                String status = adItems.get(position).getStatus();
-                String contactType = adItems.get(position).getContactType();
-
-                // Let's add data to our Intent so that we may know which one to show
-                detailIntent.putExtra("position",position);
-                detailIntent.putExtra("name",member_name);
-                detailIntent.putExtra("status",status);
-                detailIntent.putExtra("contactType", contactType);
-                startActivity(detailIntent);
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d(TAG, "Error: " + error.getMessage());
+                hidePDialog();
 
             }
         });
 
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(movieReq);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        hidePDialog();
+    }
 
+    private void hidePDialog() {
+        if (pDialog != null) {
+            pDialog.dismiss();
+            pDialog = null;
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -108,7 +129,6 @@ public class MainActivity extends ActionBarActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -129,4 +149,5 @@ public class MainActivity extends ActionBarActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
 }
