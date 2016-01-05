@@ -2,8 +2,16 @@ package app.com.example.lambertkamaro.kigalilife.Helpers;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 import app.com.example.lambertkamaro.kigalilife.Models.AdModel;
 import app.com.example.lambertkamaro.kigalilife.Models.MyAdsModel;
@@ -47,8 +55,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + TABLE_ADS +
             "(" + KEY_ID + " INTEGER PRIMARY KEY,"
             + KEY_SUBJECT + " TEXT," + KEY_BODY + " TEXT,"
-            + KEY_CREATED_AT + " DATETIME," + KEY_UPDATED_AT + " DATETIME"
-            + KEY_OWNER + " VARCHAR(255)," + KEY_MESSAGE_ID + " VARCHAR(255)"
+            + KEY_CREATED_AT + " DATETIME," + KEY_UPDATED_AT + " DATETIME,"
+            + KEY_OWNER + " VARCHAR(255)," + KEY_MESSAGE_ID + " VARCHAR(255),"
             + KEY_MAIL_DATE + " VARCHAR(255)," + KEY_FILES + " TEXT )";
 
     // My Ads table create statement
@@ -56,9 +64,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + TABLE_MYADS +
             "(" + KEY_ID + " INTEGER PRIMARY KEY,"
             + KEY_SUBJECT + " TEXT," + KEY_BODY + " TEXT,"
-            + KEY_CREATED_AT + " DATETIME," + KEY_UPDATED_AT + " DATETIME"
-            + KEY_OWNER + " VARCHAR(255)," + KEY_MESSAGE_ID + " VARCHAR(255)"
-            + KEY_MAIL_DATE + " VARCHAR(255)," + KEY_FILES + " TEXT "
+            + KEY_CREATED_AT + " DATETIME," + KEY_UPDATED_AT + " DATETIME,"
+            + KEY_OWNER + " VARCHAR(255)," + KEY_MESSAGE_ID + " VARCHAR(255),"
+            + KEY_MAIL_DATE + " VARCHAR(255)," + KEY_FILES + " TEXT,"
             + KEY_IS_SENT + " INT(1)," + KEY_IS_REOCCURING + " INT(1) )";
 
 
@@ -86,10 +94,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     /** SECTION FOR THE TABLE OPERATIONS **/
 
+    /** ------------------------ "Ads" table methods ----------------**/
     /*
     * Creating a Ads
     */
-    public long createToDo(AdModel ad, long[] tag_ids) {
+    public long createAd(AdModel ad) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -99,7 +108,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_OWNER,ad.getOwner());
         values.put(KEY_MESSAGE_ID, ad.getMessage_id());
         values.put(KEY_MAIL_DATE, ad.getMail_date());
-
+        values.put(KEY_CREATED_AT,getDateTime());
+        values.put(KEY_UPDATED_AT,getDateTime());
 
         // insert row
         long ad_id = db.insert(TABLE_ADS, null, values);
@@ -107,26 +117,249 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return ad_id;
     }
 
-    /*
-   * Creating a My Ads
-   */
-    public long createToDo(MyAdsModel myAd, long[] tag_ids) {
+    /** Find single AD **/
+    public AdModel getAd(long ad_id){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM "+TABLE_ADS +" WHERE "+KEY_ID+" = "+ad_id;
+
+        Cursor results = db.rawQuery(query,null);
+
+        // if we found something then shift cursor
+        if (results!=null){
+            results.moveToFirst();
+        }
+            // Add information to the model
+        AdModel ad = new AdModel();
+        ad.setId(results.getInt(results.getColumnIndex(KEY_ID)));
+        ad.setSubject(results.getString(results.getColumnIndex(KEY_SUBJECT)));
+        ad.setBody(results.getString(results.getColumnIndex(KEY_BODY)));
+        ad.setMail_date(results.getString(results.getColumnIndex(KEY_MAIL_DATE)));
+        ad.setMessage_id(results.getString(results.getColumnIndex(KEY_MESSAGE_ID)));
+        ad.setOwner(results.getString(results.getColumnIndex(KEY_OWNER)));
+        ad.setFiles(results.getString(results.getColumnIndex(KEY_FILES)));
+        ad.setCreated_at(results.getString(results.getColumnIndex(KEY_CREATED_AT)));
+        ad.setCreated_at(results.getString(results.getColumnIndex(KEY_UPDATED_AT)));
+
+        return ad;
+    }
+
+    /** Get all ads **/
+    public List<AdModel> getAllAds(){
+        List<AdModel> ads = new ArrayList<AdModel>();
+        String query = "SELECT * FROM "+TABLE_ADS;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor results = db.rawQuery(query,null);
+
+        // looping through all rows and adding to list
+        if (results.moveToFirst()) {
+            do {
+                // Add information to the model
+                AdModel ad = new AdModel();
+                ad.setId(results.getInt(results.getColumnIndex(KEY_ID)));
+                ad.setSubject(results.getString(results.getColumnIndex(KEY_SUBJECT)));
+                ad.setBody(results.getString(results.getColumnIndex(KEY_BODY)));
+                ad.setMail_date(results.getString(results.getColumnIndex(KEY_MAIL_DATE)));
+                ad.setMessage_id(results.getString(results.getColumnIndex(KEY_MESSAGE_ID)));
+                ad.setOwner(results.getString(results.getColumnIndex(KEY_OWNER)));
+                ad.setFiles(results.getString(results.getColumnIndex(KEY_FILES)));
+                ad.setCreated_at(results.getString(results.getColumnIndex(KEY_CREATED_AT)));
+                ad.setCreated_at(results.getString(results.getColumnIndex(KEY_UPDATED_AT)));
+
+                // adding to todo list
+                ads.add(ad);
+            } while (results.moveToNext());
+        }
+
+        return ads;
+    }
+
+    /** getting ads count */
+
+    public  int getAdsCount(){
+        String query = "SELECT COUNT(1) FROM "+TABLE_ADS;
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor results = db.rawQuery(query, null);
+
+        int counts = results.getCount();
+        results.close();
+
+        return counts;
+    }
+    /**  Updating a Ads     */
+    public int updateAds(AdModel ad) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_SUBJECT,myAd.getSubject());
-        values.put(KEY_BODY,myAd.getBody());
-        values.put(KEY_FILES,myAd.getFiles());
-        values.put(KEY_OWNER,myAd.getOwner());
-        values.put(KEY_MESSAGE_ID,myAd.getMessage_id());
-        values.put(KEY_MAIL_DATE,myAd.getMail_date());
-        values.put(KEY_IS_SENT,myAd.getIs_sent());
-        values.put(KEY_IS_REOCCURING,myAd.getIs_reoccuring());
+        values.put(KEY_SUBJECT,ad.getSubject());
+        values.put(KEY_BODY,ad.getBody());
+        values.put(KEY_FILES,ad.getFiles());
+        values.put(KEY_OWNER,ad.getOwner());
+        values.put(KEY_MESSAGE_ID, ad.getMessage_id());
+        values.put(KEY_MAIL_DATE, ad.getMail_date());
+        values.put(KEY_CREATED_AT,getDateTime());
+        values.put(KEY_UPDATED_AT,getDateTime());
+
+        // updating row
+        return db.update(TABLE_ADS, values, KEY_ID + " = ?",
+                new String[] { String.valueOf(ad.getId()) });
+    }
+
+    /**
+     * Deleting a Ad
+     */
+    public void deleteAd(long ad_id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_ADS, KEY_ID + " = ?",
+                new String[]{String.valueOf(ad_id)});
+    }
+
+
+    /** ------------------------ "MyAds" table methods ----------------**/
+    /*
+     * Creating a My Ads
+     */
+    public long createMyAd(MyAdsModel myAd, long[] tag_ids) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_SUBJECT, myAd.getSubject());
+        values.put(KEY_BODY, myAd.getBody());
+        values.put(KEY_FILES, myAd.getFiles());
+        values.put(KEY_OWNER, myAd.getOwner());
+        values.put(KEY_MESSAGE_ID, myAd.getMessage_id());
+        values.put(KEY_MAIL_DATE, myAd.getMail_date());
+        values.put(KEY_IS_SENT, myAd.getIs_sent());
+        values.put(KEY_IS_REOCCURING, myAd.getIs_reoccuring());
+        values.put(KEY_CREATED_AT,getDateTime());
+        values.put(KEY_UPDATED_AT,getDateTime());
 
 
         // insert row
         long myad_id = db.insert(TABLE_MYADS, null, values);
 
         return myad_id;
+    }
+
+    /** Find single MyAds **/
+    public MyAdsModel getMyAd(long ad_id){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM "+TABLE_MYADS +" WHERE "+KEY_ID+" = "+ad_id;
+
+        Cursor results = db.rawQuery(query, null);
+
+        // if we found something then shift cursor
+        if (results!=null){
+            results.moveToFirst();
+        }
+        // Add information to the model
+        MyAdsModel ad = new MyAdsModel();
+        ad.setId(results.getInt(results.getColumnIndex(KEY_ID)));
+        ad.setSubject(results.getString(results.getColumnIndex(KEY_SUBJECT)));
+        ad.setBody(results.getString(results.getColumnIndex(KEY_BODY)));
+        ad.setMail_date(results.getString(results.getColumnIndex(KEY_MAIL_DATE)));
+        ad.setMessage_id(results.getString(results.getColumnIndex(KEY_MESSAGE_ID)));
+        ad.setOwner(results.getString(results.getColumnIndex(KEY_OWNER)));
+        ad.setFiles(results.getString(results.getColumnIndex(KEY_FILES)));
+        ad.setIs_sent(results.getInt(results.getColumnIndex(KEY_IS_SENT)));
+        ad.setIs_reoccuring(results.getInt(results.getColumnIndex(KEY_IS_REOCCURING)));
+        ad.setCreated_at(results.getString(results.getColumnIndex(KEY_CREATED_AT)));
+        ad.setCreated_at(results.getString(results.getColumnIndex(KEY_UPDATED_AT)));
+
+        return ad;
+    }
+
+    /** Get all myads **/
+    public List<MyAdsModel> getAllmyAds(){
+        List<MyAdsModel> myads = new ArrayList<MyAdsModel>();
+        String query = "SELECT * FROM "+TABLE_MYADS;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor results = db.rawQuery(query,null);
+
+        // looping through all rows and adding to list
+        if (results.moveToFirst()) {
+            do {
+                // Add information to the model
+                MyAdsModel ad = new MyAdsModel();
+                ad.setId(results.getInt(results.getColumnIndex(KEY_ID)));
+                ad.setSubject(results.getString(results.getColumnIndex(KEY_SUBJECT)));
+                ad.setBody(results.getString(results.getColumnIndex(KEY_BODY)));
+                ad.setMail_date(results.getString(results.getColumnIndex(KEY_MAIL_DATE)));
+                ad.setMessage_id(results.getString(results.getColumnIndex(KEY_MESSAGE_ID)));
+                ad.setOwner(results.getString(results.getColumnIndex(KEY_OWNER)));
+                ad.setFiles(results.getString(results.getColumnIndex(KEY_FILES)));
+                ad.setIs_sent(results.getInt(results.getColumnIndex(KEY_IS_SENT)));
+                ad.setIs_reoccuring(results.getInt(results.getColumnIndex(KEY_IS_REOCCURING)));
+                ad.setCreated_at(results.getString(results.getColumnIndex(KEY_CREATED_AT)));
+                ad.setCreated_at(results.getString(results.getColumnIndex(KEY_UPDATED_AT)));
+
+                // adding to todo list
+                myads.add(ad);
+            } while (results.moveToNext());
+        }
+
+        return myads;
+    }
+
+    /** getting myads count */
+
+    public  int getMyAdsCount(){
+        String query = "SELECT COUNT(1) FROM "+TABLE_MYADS;
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor results = db.rawQuery(query, null);
+
+        int counts = results.getCount();
+        results.close();
+
+        return counts;
+    }
+    /**  Updating a myAds     */
+    public int updateMyAds(MyAdsModel myAd) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_SUBJECT, myAd.getSubject());
+        values.put(KEY_BODY, myAd.getBody());
+        values.put(KEY_FILES, myAd.getFiles());
+        values.put(KEY_OWNER, myAd.getOwner());
+        values.put(KEY_MESSAGE_ID, myAd.getMessage_id());
+        values.put(KEY_MAIL_DATE, myAd.getMail_date());
+        values.put(KEY_IS_SENT, myAd.getIs_sent());
+        values.put(KEY_IS_REOCCURING, myAd.getIs_reoccuring());
+        values.put(KEY_CREATED_AT,getDateTime());
+        values.put(KEY_UPDATED_AT,getDateTime());
+
+        // updating row
+        return db.update(TABLE_MYADS, values, KEY_ID + " = ?",
+                new String[] { String.valueOf(myAd.getId()) });
+    }
+
+    /**
+     * Deleting a MyAd
+     */
+    public void deleteMyAd(long ad_id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_MYADS, KEY_ID + " = ?",
+                new String[]{String.valueOf(ad_id)});
+    }
+
+
+    /** closing database **/
+    public void closeDB() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        if (db != null && db.isOpen())
+            db.close();
+    }
+    /**     * get datetime     * */
+    private String getDateTime() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+                "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        Date date = new Date();
+        return dateFormat.format(date);
     }
 }

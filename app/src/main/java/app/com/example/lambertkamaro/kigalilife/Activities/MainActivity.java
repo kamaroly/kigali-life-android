@@ -1,10 +1,13 @@
 package app.com.example.lambertkamaro.kigalilife.Activities;
 import app.com.example.lambertkamaro.kigalilife.Adapters.CustomListAdapter;
 import app.com.example.lambertkamaro.kigalilife.Controllers.AppController;
+import app.com.example.lambertkamaro.kigalilife.Helpers.DatabaseHelper;
+import app.com.example.lambertkamaro.kigalilife.Models.AdModel;
 import app.com.example.lambertkamaro.kigalilife.Models.Movie;
 import app.com.example.lambertkamaro.kigalilife.R;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -35,7 +38,8 @@ public class MainActivity extends ActionBarActivity {
     // Movies json url
     private static final String url = "http://api.androidhive.info/json/movies.json";
     private ProgressDialog pDialog;
-    private List<Movie> movieList = new ArrayList<Movie>();
+    private List<AdModel> adsList = new ArrayList<AdModel>();
+    DatabaseHelper db;
     private ListView listView;
     private CustomListAdapter adapter;
 
@@ -43,15 +47,16 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        db = new DatabaseHelper(getApplicationContext());
 
         listView = (ListView) findViewById(R.id.list);
-        adapter = new CustomListAdapter(this, movieList);
+        adapter  = new CustomListAdapter(this,db.getAllAds());
         listView.setAdapter(adapter);
 
-        pDialog = new ProgressDialog(this);
-        // Showing progress dialog before making http request
-        pDialog.setMessage("Loading...");
-        pDialog.show();
+//        pDialog = new ProgressDialog(this);
+//        // Showing progress dialog before making http request
+//        pDialog.setMessage("Loading...");
+//        pDialog.show();
 
         // changing action bar color
         getActionBar().setBackgroundDrawable(
@@ -62,41 +67,34 @@ public class MainActivity extends ActionBarActivity {
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
-                        Log.d(TAG, response.toString());
-                        hidePDialog();
 
                         // Parsing json
                         for (int i = 0; i < response.length(); i++) {
                             try {
 
                                 JSONObject obj = response.getJSONObject(i);
-                                Movie movie = new Movie();
-                                movie.setTitle(obj.getString("title"));
-                                movie.setThumbnailUrl(obj.getString("image"));
-                                movie.setRating(((Number) obj.get("rating"))
-                                        .doubleValue());
-                                movie.setYear(obj.getInt("releaseYear"));
+                                AdModel ad  = new AdModel();
+                                ad.setSubject(obj.getString("title"));
+                                ad.setBody(obj.getString("title") + obj.getString("title") + obj.getString("title"));
+                                ad.setMail_date(new Date().toString());
+                                ad.setMessage_id("23423423");
+                                ad.setOwner("kamaroly");
+                                ad.setFiles(obj.getString("image"));
+                                // adding ad to ads array
+                                 db.createAd(ad);
 
-                                // Genre is json array
-                                JSONArray genreArry = obj.getJSONArray("genre");
-                                ArrayList<String> genre = new ArrayList<String>();
-                                for (int j = 0; j < genreArry.length(); j++) {
-                                    genre.add((String) genreArry.get(j));
-                                }
-                                movie.setGenre(genre);
-
-                                // adding movie to movies array
-                                movieList.add(movie);
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-
                         }
+
 
                         // notifying list adapter about data changes
                         // so that it renders the list view with updated data
-                        adapter.notifyDataSetChanged();
+                        if(response.length() > 0) {
+                            adapter.notifyDataSetChanged();
+                        }
                     }
                 }, new Response.ErrorListener() {
             @Override

@@ -18,6 +18,7 @@ import com.android.volley.toolbox.NetworkImageView;
 import java.util.List;
 
 import app.com.example.lambertkamaro.kigalilife.Controllers.AppController;
+import app.com.example.lambertkamaro.kigalilife.Models.AdModel;
 import app.com.example.lambertkamaro.kigalilife.Models.Movie;
 import app.com.example.lambertkamaro.kigalilife.R;
 
@@ -30,22 +31,22 @@ import app.com.example.lambertkamaro.kigalilife.R;
 public class CustomListAdapter extends BaseAdapter {
     private Activity activity;
     private LayoutInflater inflater;
-    private List<Movie> movieItems;
+    private List<AdModel> adItems;
     ImageLoader imageLoader = AppController.getInstance().getImageLoader();
 
-    public CustomListAdapter(Activity activity, List<Movie> movieItems) {
+    public CustomListAdapter(Activity activity, List<AdModel> adItems) {
         this.activity = activity;
-        this.movieItems = movieItems;
+        this.adItems = adItems;
     }
 
     @Override
     public int getCount() {
-        return movieItems.size();
+        return adItems.size();
     }
 
     @Override
     public Object getItem(int location) {
-        return movieItems.get(location);
+        return adItems.get(location);
     }
 
     @Override
@@ -72,28 +73,22 @@ public class CustomListAdapter extends BaseAdapter {
         TextView year = (TextView) convertView.findViewById(R.id.releaseYear);
 
         // getting movie data for the row
-        Movie m = movieItems.get(position);
+        AdModel ad = adItems.get(position);
 
         // thumbnail image
-        thumbNail.setImageUrl(m.getThumbnailUrl(), imageLoader);
+        thumbNail.setImageUrl(ad.getFiles(), imageLoader);
 
         // title
-        title.setText(m.getTitle());
+        title.setText(ad.getSubject());
 
         // rating
-        rating.setText("Rating: " + String.valueOf(m.getRating()));
+        rating.setText("Description: " + String.valueOf(ad.getBody()));
 
         // genre
-        String genreStr = "";
-        for (String str : m.getGenre()) {
-            genreStr += str + ", ";
-        }
-        genreStr = genreStr.length() > 0 ? genreStr.substring(0,
-                genreStr.length() - 2) : genreStr;
-        genre.setText(genreStr);
+        genre.setText(ad.getSubject());
 
         // release year
-        year.setText(String.valueOf(m.getYear()));
+        year.setText(String.valueOf(ad.getMail_date()));
 
         return convertView;
     }

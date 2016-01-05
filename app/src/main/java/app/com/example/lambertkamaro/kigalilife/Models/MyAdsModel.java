@@ -18,12 +18,15 @@ public class MyAdsModel {
     String message_id;
     String mail_date;
     String files;
-    boolean is_sent = false;
-    boolean is_reoccuring = false;
+    int is_sent = 0;
+    int is_reoccuring = 0;
     String created_at;
     String updated_at;
 
     // Constructors
+    public  MyAdsModel(){
+
+    }
     public MyAdsModel(int id,String subject,String body,String owner,String message_id,String mail_date){
         this.id = id;
         this.subject = subject;
@@ -85,11 +88,11 @@ public class MyAdsModel {
         this.files = files;
     }
 
-    public void setIs_sent(boolean is_sent) {
+    public void setIs_sent(int is_sent) {
         this.is_sent = is_sent;
     }
 
-    public void setIs_reoccuring(boolean is_reoccuring) {
+    public void setIs_reoccuring(int is_reoccuring) {
         this.is_reoccuring = is_reoccuring;
     }
 
@@ -132,11 +135,11 @@ public class MyAdsModel {
         return files;
     }
 
-    public boolean getIs_sent() {
+    public int getIs_sent() {
         return is_sent;
     }
 
-    public boolean getIs_reoccuring() {
+    public int getIs_reoccuring() {
         return is_reoccuring;
     }
 

@@ -13,6 +13,8 @@
     <string name="message">Type your message</string>
     <string name="send">Send</string>
     <string name="attachment">Attachment</string>
+    <string name="action_search" >Search</string>
+    <string name="search_hint">Search...</string>
     <!-- Names -->
     <string-array name="Member_names">
         <item>luxurious 7 seater Sofa on sell</item>

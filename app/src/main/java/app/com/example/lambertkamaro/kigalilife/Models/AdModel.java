@@ -19,6 +19,10 @@ public class AdModel {
     String updated_at;
 
     // Constructors
+    public  AdModel(){
+
+    }
+
     public AdModel(int id,String subject,String body,String owner,String message_id,String mail_date){
         this.id = id;
         this.subject = subject;
