@@ -6,6 +6,7 @@ package app.com.example.lambertkamaro.kigalilife.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +16,11 @@ import android.widget.TextView;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
+import app.com.example.lambertkamaro.kigalilife.Activities.AdDetailsActivity;
 import app.com.example.lambertkamaro.kigalilife.Controllers.AppController;
 import app.com.example.lambertkamaro.kigalilife.Models.AdModel;
 import app.com.example.lambertkamaro.kigalilife.Models.Movie;
@@ -32,11 +36,15 @@ public class CustomListAdapter extends BaseAdapter {
     private Activity activity;
     private LayoutInflater inflater;
     private List<AdModel> adItems;
+    private ArrayList<AdModel> arraylist;
     ImageLoader imageLoader = AppController.getInstance().getImageLoader();
 
     public CustomListAdapter(Activity activity, List<AdModel> adItems) {
         this.activity = activity;
         this.adItems = adItems;
+
+        this.arraylist = new ArrayList<AdModel>();
+        this.arraylist.addAll(adItems);
     }
 
     @Override
@@ -90,11 +98,45 @@ public class CustomListAdapter extends BaseAdapter {
         // release year
         year.setText(String.valueOf(ad.getMail_date()));
 
+        // Listen for ListView Item Click
+        // Listen for ListView Item Click
+        convertView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                // Send single item click data to SingleItemView Class
+                Intent intent = new Intent(activity, AdDetailsActivity.class);
+                // Pass all data status
+                intent.putExtra("status","Test status");
+                // Pass all data name
+                intent.putExtra("name","Test description");
+
+                // Pass all data flag
+                // Start SingleItemView Class
+                activity.startActivity(intent);
+            }
+        });
+
         return convertView;
     }
 
-
-
-
-
+    // Filter Class
+    public void filter(String charText) {
+        charText = charText.toLowerCase(Locale.getDefault());
+        adItems.clear();
+        if (charText.length() == 0) {
+            adItems.addAll(arraylist);
+        }
+        else
+        {
+            for (AdModel ad : arraylist)
+            {
+                if (ad.getSubject().toLowerCase(Locale.getDefault()).contains(charText) || ad.getBody().toLowerCase(Locale.getDefault()).contains(charText))
+                {
+                    adItems.add(ad);
+                }
+            }
+        }
+        notifyDataSetChanged();
+    }
 }

@@ -3,7 +3,6 @@ import app.com.example.lambertkamaro.kigalilife.Adapters.CustomListAdapter;
 import app.com.example.lambertkamaro.kigalilife.Controllers.AppController;
 import app.com.example.lambertkamaro.kigalilife.Helpers.DatabaseHelper;
 import app.com.example.lambertkamaro.kigalilife.Models.AdModel;
-import app.com.example.lambertkamaro.kigalilife.Models.Movie;
 import app.com.example.lambertkamaro.kigalilife.R;
 
 import java.util.ArrayList;
@@ -14,17 +13,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -47,8 +43,11 @@ public class MainActivity extends ActionBarActivity {
     private ListView listView;
     private CustomListAdapter adapter;
 
+    /** an initial list of ads that we search through **/
     private List<AdModel> adsList;
 
+    /** a post-search filtered list of ads **/
+    private List<AdModel> adsFiltered;
 
     /** keeps track if the search bar is opened **/
     private boolean searchOpened;
@@ -79,11 +78,13 @@ public class MainActivity extends ActionBarActivity {
             adsList = savedInstanceState.getParcelableArrayList("ADS");
             searchOpened = savedInstanceState.getBoolean("SEARCH_OPENED");
             searchQuery = savedInstanceState.getString("SEARCH_QUERY");
+            adsFiltered = savedInstanceState.getParcelableArrayList("ADS_FILTERED");
         }
         else {
             // Get ads we  have in the db
             db = new DatabaseHelper(getApplicationContext());
             adsList =  db.getAllAds();
+            adsFiltered = adsList;
             searchOpened = false;
             searchQuery = "";
         }
@@ -97,7 +98,7 @@ public class MainActivity extends ActionBarActivity {
 
 
         // Setting the list adapter. We fill the adapter with filtered list
-        adapter  = new CustomListAdapter(this,adsList);
+        adapter  = new CustomListAdapter(this,adsFiltered);
 
         // Setting the list adapter. We fill the adapter with filtered list
         // because that is the list we want to show. The initial one we
@@ -115,8 +116,8 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        ArrayList<AdModel> adsFiltered = (ArrayList<AdModel>) adsList;
-        outState.putParcelableArrayList("ADS", adsFiltered);
+        outState.putParcelableArrayList("ADS", (ArrayList<AdModel>) adsList);
+        outState.putParcelableArrayList("ADS", (ArrayList<AdModel>) adsFiltered);
         outState.putBoolean("SEARCH_OPENED", searchOpened);
         outState.putString("SEARCH_QUERY", searchQuery);
     }
@@ -146,7 +147,6 @@ public class MainActivity extends ActionBarActivity {
         getSupportActionBar().setDisplayShowCustomEnabled(false);
         // Change search icon accordingly.
         searchAction.setIcon(iconOpenSearch);
-        adsList = db.getAllAds();
         searchOpened = false;
 
 
@@ -183,9 +183,8 @@ public class MainActivity extends ActionBarActivity {
 
                         // notifying list adapter about data changes
                         // so that it renders the list view with updated data
-                        if(response.length() > 0) {
-                            adapter.notifyDataSetChanged();
-                        }
+
+                        adapter.notifyDataSetChanged();
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -267,16 +266,13 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         public void onTextChanged(CharSequence c, int i, int i2, int i3) {
-            searchQuery = searchEditText.getText().toString();
-            adsList = db.searchAds(searchQuery);
+
         }
 
         @Override
         public void afterTextChanged(Editable editable) {
             searchQuery = searchEditText.getText().toString();
-            adsList = db.searchAds(searchQuery);
+            adapter.filter(searchQuery);
         }
-
     }
-
 }
