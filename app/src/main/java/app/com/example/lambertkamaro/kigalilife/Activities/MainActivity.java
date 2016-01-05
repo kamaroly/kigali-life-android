@@ -19,10 +19,15 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.support.v7.app.ActionBarActivity;
 
@@ -38,32 +43,118 @@ public class MainActivity extends ActionBarActivity {
     // Movies json url
     private static final String url = "http://api.androidhive.info/json/movies.json";
     private ProgressDialog pDialog;
-    private List<AdModel> adsList = new ArrayList<AdModel>();
     DatabaseHelper db;
     private ListView listView;
     private CustomListAdapter adapter;
+
+    private List<AdModel> adsList;
+
+
+    /** keeps track if the search bar is opened **/
+    private boolean searchOpened;
+
+    /** holds current text in the search bar **/
+    private String searchQuery;
+
+    /**  icon that shows when the search bar is closed (magnifier) **/
+    private Drawable iconOpenSearch;
+
+    /**  icon that shows when the search bar is opened (x sign) **/
+    private Drawable iconCloseSearch;
+
+    /** search bar text field **/
+    private EditText searchEditText;
+
+    /** search bar action button **/
+    private MenuItem searchAction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        db = new DatabaseHelper(getApplicationContext());
 
+
+        // Getting the list of movies to fill the list view.
+        if (savedInstanceState != null) {
+            adsList = savedInstanceState.getParcelableArrayList("ADS");
+            searchOpened = savedInstanceState.getBoolean("SEARCH_OPENED");
+            searchQuery = savedInstanceState.getString("SEARCH_QUERY");
+        }
+        else {
+            // Get ads we  have in the db
+            db = new DatabaseHelper(getApplicationContext());
+            adsList =  db.getAllAds();
+            searchOpened = false;
+            searchQuery = "";
+        }
+        // Getting the icons.
+        iconOpenSearch = getResources().getDrawable(R.drawable.abc_ic_search);
+        iconCloseSearch = getResources().getDrawable(R.drawable.abc_ic_clear );
+
+        // Initializing the list view.
         listView = (ListView) findViewById(R.id.list);
-        adapter  = new CustomListAdapter(this,db.getAllAds());
+
+
+
+        // Setting the list adapter. We fill the adapter with filtered list
+        adapter  = new CustomListAdapter(this,adsList);
+
+        // Setting the list adapter. We fill the adapter with filtered list
+        // because that is the list we want to show. The initial one we
         listView.setAdapter(adapter);
 
-//        pDialog = new ProgressDialog(this);
-//        // Showing progress dialog before making http request
-//        pDialog.setMessage("Loading...");
-//        pDialog.show();
+        // If the search bar was opened previously, open it on recreate.
+        if (searchOpened){
+            openSearchBar(searchQuery);
+        }
+        // Load the ads in the database.
+        this.loadAds();
+    }
 
-        // changing action bar color
-        getActionBar().setBackgroundDrawable(
-                new ColorDrawable(Color.parseColor("#1b1b1b")));
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        ArrayList<AdModel> adsFiltered = (ArrayList<AdModel>) adsList;
+        outState.putParcelableArrayList("ADS", adsFiltered);
+        outState.putBoolean("SEARCH_OPENED", searchOpened);
+        outState.putString("SEARCH_QUERY", searchQuery);
+    }
+
+
+    private void openSearchBar(String queryText) {
+
+        // Set custom view on action bar.
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setCustomView(R.layout.search_bar);
+
+        // Search edit text field setup.
+        searchEditText = (EditText) actionBar.getCustomView().findViewById(R.id.etSearch);
+        searchEditText.addTextChangedListener(new SearchWatcher());
+        searchEditText.setText(queryText);
+        searchEditText.requestFocus();
+
+        // Change search icon accordingly.
+        searchAction.setIcon(iconCloseSearch);
+        searchOpened = true;
+
+    }
+
+    private void closeSearchBar() {
+        // Remove custom view.
+        getSupportActionBar().setDisplayShowCustomEnabled(false);
+        // Change search icon accordingly.
+        searchAction.setIcon(iconOpenSearch);
+        adsList = db.getAllAds();
+        searchOpened = false;
+
+
+    }
+
+    public  void loadAds(){
         // Creating volley request obj
-        JsonArrayRequest movieReq = new JsonArrayRequest(url,
+        JsonArrayRequest adsRequest = new JsonArrayRequest(url,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
@@ -81,7 +172,7 @@ public class MainActivity extends ActionBarActivity {
                                 ad.setOwner("kamaroly");
                                 ad.setFiles(obj.getString("image"));
                                 // adding ad to ads array
-                                 db.createAd(ad);
+                                db.createAd(ad);
 
 
                             } catch (JSONException e) {
@@ -106,7 +197,7 @@ public class MainActivity extends ActionBarActivity {
         });
 
         // Adding request to request queue
-        AppController.getInstance().addToRequestQueue(movieReq);
+        AppController.getInstance().addToRequestQueue(adsRequest);
     }
 
     @Override
@@ -128,6 +219,13 @@ public class MainActivity extends ActionBarActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        searchAction = menu.findItem(R.id.action_search);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -144,9 +242,41 @@ public class MainActivity extends ActionBarActivity {
             case android.R.id.home:
                 onBackPressed();
                 return true;
+            case  R.id.action_search:
+                if (searchOpened) {
+                    closeSearchBar();
+                } else {
+                    openSearchBar(searchQuery);
+                }
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+
+    /**
+     * Responsible for handling changes in search edit text.
+     */
+    private class SearchWatcher implements TextWatcher {
+
+        @Override
+        public void beforeTextChanged(CharSequence c, int i, int i2, int i3) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence c, int i, int i2, int i3) {
+            searchQuery = searchEditText.getText().toString();
+            adsList = db.searchAds(searchQuery);
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            searchQuery = searchEditText.getText().toString();
+            adsList = db.searchAds(searchQuery);
+        }
+
     }
 
 }

@@ -114,6 +114,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // insert row
         long ad_id = db.insert(TABLE_ADS, null, values);
 
+        // If the ads are more than 50 and this was inserted then delete the ordest one
+        if (this.getAdsCount() > 50){
+            String toBeDeleteQuest = "SELECT "+KEY_ID+" FROM "+TABLE_ADS
+                                     + " ORDER BY "+KEY_CREATED_AT +" ASC LIMIT 50";
+
+            db = this.getReadableDatabase();
+
+            Cursor results = db.rawQuery(toBeDeleteQuest,null);
+
+            // looping through all rows and adding to list
+            if (results.moveToFirst()) {
+                do {
+                    this.deleteAd(results.getInt(results.getColumnIndex(KEY_ID)));
+                } while (results.moveToNext());
+            }
+        }
+
         return ad_id;
     }
 
@@ -147,6 +164,38 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<AdModel> getAllAds(){
         List<AdModel> ads = new ArrayList<AdModel>();
         String query = "SELECT * FROM "+TABLE_ADS;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor results = db.rawQuery(query,null);
+
+        // looping through all rows and adding to list
+        if (results.moveToFirst()) {
+            do {
+                // Add information to the model
+                AdModel ad = new AdModel();
+                ad.setId(results.getInt(results.getColumnIndex(KEY_ID)));
+                ad.setSubject(results.getString(results.getColumnIndex(KEY_SUBJECT)));
+                ad.setBody(results.getString(results.getColumnIndex(KEY_BODY)));
+                ad.setMail_date(results.getString(results.getColumnIndex(KEY_MAIL_DATE)));
+                ad.setMessage_id(results.getString(results.getColumnIndex(KEY_MESSAGE_ID)));
+                ad.setOwner(results.getString(results.getColumnIndex(KEY_OWNER)));
+                ad.setFiles(results.getString(results.getColumnIndex(KEY_FILES)));
+                ad.setCreated_at(results.getString(results.getColumnIndex(KEY_CREATED_AT)));
+                ad.setCreated_at(results.getString(results.getColumnIndex(KEY_UPDATED_AT)));
+
+                // adding to ads list
+                ads.add(ad);
+            } while (results.moveToNext());
+        }
+
+        return ads;
+    }
+    /** Get all ads **/
+    public List<AdModel> searchAds(String keyword){
+        List<AdModel> ads = new ArrayList<AdModel>();
+        String query = "SELECT * FROM "+TABLE_ADS + " WHERE "+KEY_SUBJECT+" LIKE '%"+keyword
+                        + "%' OR "+KEY_BODY +" LIKE '%"+keyword+ "%'";
 
         SQLiteDatabase db = this.getReadableDatabase();
 

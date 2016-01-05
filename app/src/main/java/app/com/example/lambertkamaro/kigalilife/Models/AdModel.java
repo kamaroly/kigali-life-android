@@ -1,12 +1,15 @@
 package app.com.example.lambertkamaro.kigalilife.Models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.security.Timestamp;
 import java.util.Date;
 
 /**
  * Created by Lambert.Kamaro on 1/5/2016.
  */
-public class AdModel {
+public class AdModel implements Parcelable {
 
     int id;
     String subject;
@@ -17,7 +20,7 @@ public class AdModel {
     String files;
     String created_at;
     String updated_at;
-
+    private int mData;
     // Constructors
     public  AdModel(){
 
@@ -127,4 +130,34 @@ public class AdModel {
     public String getUpdated_at() {
         return updated_at;
     }
+
+
+    /** SECTION FOR THE Parcelable METHODS IMPLEMENATIONS **/
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(mData);
+    }
+
+    public static final Parcelable.Creator<AdModel> CREATOR
+            = new Parcelable.Creator<AdModel>() {
+        public AdModel createFromParcel(Parcel in) {
+            return new AdModel(in);
+        }
+
+        public AdModel[] newArray(int size) {
+            return new AdModel[size];
+        }
+    };
+
+    /** recreate object from parcel */
+    private AdModel(Parcel in) {
+        mData = in.readInt();
+    }
+
+    /** END OF SECTION FOR THE Parcelable METHODS IMPLEMENATIONS **/
 }
