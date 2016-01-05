@@ -21,13 +21,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
+import android.support.v7.app.ActionBarActivity;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonArrayRequest;
 
-public class MainActivity extends Activity {
+public class MainActivity extends ActionBarActivity {
     // Log tag
     private static final String TAG = MainActivity.class.getSimpleName();
 

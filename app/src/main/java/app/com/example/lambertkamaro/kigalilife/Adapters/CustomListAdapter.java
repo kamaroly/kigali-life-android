@@ -26,22 +26,6 @@ import app.com.example.lambertkamaro.kigalilife.R;
  * This is a custom list adapter class which provides data to list view. In other words it renders the layout_row.xml in list by pre-filling appropriate information.
  * Created by Lambert.Kamaro on 1/3/2016.
  */
-import app.com.example.lambertkamaro.kigalilife.R;
-import app.com.example.lambertkamaro.kigalilife.Controllers.AppController;
-import app.com.example.lambertkamaro.kigalilife.Models.Movie;
-
-import java.util.List;
-
-import android.app.Activity;
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.TextView;
-
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.NetworkImageView;
 
 public class CustomListAdapter extends BaseAdapter {
     private Activity activity;
@@ -113,5 +97,9 @@ public class CustomListAdapter extends BaseAdapter {
 
         return convertView;
     }
+
+
+
+
 
 }
