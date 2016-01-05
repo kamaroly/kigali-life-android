@@ -20,8 +20,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import org.json.JSONArray;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -44,9 +47,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
+import app.com.example.lambertkamaro.kigalilife.Adapters.ImageAdapter;
+import app.com.example.lambertkamaro.kigalilife.Models.MyAdsModel;
 import app.com.example.lambertkamaro.kigalilife.R;
 
 import static javax.mail.internet.InternetAddress.parse;
@@ -65,7 +74,9 @@ public class NewAdActivity extends ActionBarActivity implements OnClickListener{
     Button   buttonSend,buttonAttachment;
     /** Strings **/
     String email,subject,messageBody;
-    String attachmentFile = null;
+    ArrayList<String> attachmentFile = new ArrayList<String>();
+
+    ImageAdapter imageAdaptor;
 
 
     @Override
@@ -83,7 +94,11 @@ public class NewAdActivity extends ActionBarActivity implements OnClickListener{
         buttonSend = (Button) findViewById(R.id.buttonSend);
         buttonAttachment = (Button) findViewById(R.id.buttonAttachment);
 
-        ivImage = (ImageView) findViewById(R.id.ivImage);
+        GridView gridView = (GridView) findViewById(R.id.grid_view);
+
+        // Instance of ImageAdapter Class
+        imageAdaptor = new ImageAdapter(this,attachmentFile);
+        gridView.setAdapter(imageAdaptor);
 
         buttonSend.setOnClickListener(this);
         buttonAttachment.setOnClickListener(this);
@@ -123,6 +138,10 @@ public class NewAdActivity extends ActionBarActivity implements OnClickListener{
             fo = new FileOutputStream(destination);
             fo.write(bytes.toByteArray());
             fo.close();
+
+            // Set global attachment path
+            attachmentFile.add(destination.getAbsolutePath());
+            imageAdaptor.notifyDataSetChanged();
         }
         catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -131,9 +150,6 @@ public class NewAdActivity extends ActionBarActivity implements OnClickListener{
             e.printStackTrace();
         }
 
-        ivImage.setImageBitmap(data);
-        // Set global attachment path
-        attachmentFile = filename;
     }
 
     /**
@@ -157,20 +173,9 @@ public class NewAdActivity extends ActionBarActivity implements OnClickListener{
         BitmapFactory.decodeFile(selectedImagePath, options);
 
         // Set global attachment path
-        attachmentFile = selectedImagePath;
+        attachmentFile.add(selectedImagePath);
 
-        final int REQUIRED_SIZE = 200;
-
-        int scale = 1;
-
-        while (options.outWidth / scale / 2 >= REQUIRED_SIZE
-                && options.outHeight / scale / 2 >= REQUIRED_SIZE)
-            scale *= 2;
-        options.inSampleSize = scale;
-        options.inJustDecodeBounds = false;
-        bm = BitmapFactory.decodeFile(selectedImagePath, options);
-
-        ivImage.setImageBitmap(bm);
+        imageAdaptor.notifyDataSetChanged();
     }
 
     /**
@@ -222,6 +227,13 @@ public class NewAdActivity extends ActionBarActivity implements OnClickListener{
           email = "kamaroly@gmail.com";
           subject = editTextSubText.getText().toString();
           messageBody = ediTextMessage.getText().toString();
+        MyAdsModel ad = new MyAdsModel();
+
+        ad.setSubject(subject);
+        ad.setBody(messageBody);
+        ad.setOwner("kamaroly");
+        JSONArray files = new JSONArray(Arrays.asList(attachmentFile));
+        ad.setFiles(files.toString());
 
         try {
 
@@ -279,7 +291,7 @@ public class NewAdActivity extends ActionBarActivity implements OnClickListener{
                 message.setSubject(subject);
 
                 // If we have attachment then process it
-                if (attachmentFile != null) {
+                if (attachmentFile.size() > 0) {
                     // Create the message part
                     BodyPart messageBodyPart = new MimeBodyPart();
 
@@ -287,18 +299,21 @@ public class NewAdActivity extends ActionBarActivity implements OnClickListener{
                     messageBodyPart.setText(messageBody);
 
                     // Create a multipar message
-                    Multipart multipart = new MimeMultipart();
+                    Multipart multipart = new MimeMultipart("mixed");
 
                     // Set text message part
                     multipart.addBodyPart(messageBodyPart);
 
-                    // Part two is attachment
-                    messageBodyPart = new MimeBodyPart();
+                    // Part two is attachments to be added to the mail
+                    String imagePath = null;
+                    for (Iterator<String> file = attachmentFile.iterator(); file.hasNext();) {
+                        imagePath = file.next();
+                        DataSource source = new FileDataSource(imagePath);
+                        messageBodyPart.setDataHandler(new DataHandler(source));
+                        messageBodyPart.setFileName(imagePath);
+                        multipart.addBodyPart(messageBodyPart);
+                    }
 
-                    DataSource source = new FileDataSource(attachmentFile);
-                    messageBodyPart.setDataHandler(new DataHandler(source));
-                    messageBodyPart.setFileName(attachmentFile);
-                    multipart.addBodyPart(messageBodyPart);
 
                     // Send the complete message parts
                     message.setContent(multipart);

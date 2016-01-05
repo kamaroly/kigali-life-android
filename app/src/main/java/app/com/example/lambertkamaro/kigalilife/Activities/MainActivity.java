@@ -39,8 +39,11 @@ public class MainActivity extends ActionBarActivity {
     // Movies json url
     private static final String url = "http://api.androidhive.info/json/movies.json";
     private ProgressDialog pDialog;
+
     DatabaseHelper db;
+
     private ListView listView;
+
     private CustomListAdapter adapter;
 
     /** an initial list of ads that we search through **/
@@ -66,6 +69,9 @@ public class MainActivity extends ActionBarActivity {
 
     /** search bar action button **/
     private MenuItem searchAction;
+
+    /** initially offset will be 0, later will be updated while parsing the json **/
+    private int offSet = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,8 +101,6 @@ public class MainActivity extends ActionBarActivity {
         // Initializing the list view.
         listView = (ListView) findViewById(R.id.list);
 
-
-
         // Setting the list adapter. We fill the adapter with filtered list
         adapter  = new CustomListAdapter(this,adsFiltered);
 
@@ -108,6 +112,7 @@ public class MainActivity extends ActionBarActivity {
         if (searchOpened){
             openSearchBar(searchQuery);
         }
+
         // Load the ads in the database.
         this.loadAds();
     }
@@ -121,7 +126,6 @@ public class MainActivity extends ActionBarActivity {
         outState.putBoolean("SEARCH_OPENED", searchOpened);
         outState.putString("SEARCH_QUERY", searchQuery);
     }
-
 
     private void openSearchBar(String queryText) {
 
@@ -148,8 +152,6 @@ public class MainActivity extends ActionBarActivity {
         // Change search icon accordingly.
         searchAction.setIcon(iconOpenSearch);
         searchOpened = false;
-
-
     }
 
     public  void loadAds(){
@@ -173,7 +175,6 @@ public class MainActivity extends ActionBarActivity {
                                 ad.setFiles(obj.getString("image"));
                                 // adding ad to ads array
                                 db.createAd(ad);
-
 
                             } catch (JSONException e) {
                                 e.printStackTrace();

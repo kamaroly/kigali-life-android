@@ -30,21 +30,19 @@
         android:inputType="textMultiLine"
         />
     <!-- image views -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
+    <GridView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/grid_view"
         android:layout_below="@+id/editTextMessage"
-        android:orientation="vertical"
-        android:id="@+id/imageLists"
-        android:padding="10dp" >
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:numColumns="auto_fit"
+        android:columnWidth="80dp"
+        android:horizontalSpacing="1dp"
+        android:verticalSpacing="10dp"
+        android:gravity="center"
+        android:stretchMode="columnWidth" >
 
-        <ImageView
-            android:id="@+id/ivImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
+    </GridView>
 
     <!-- Buttons -->
     <!-- Defining send mail button -->
@@ -52,7 +50,7 @@
         android:layout_width="100dp"
         android:layout_height="50dp"
         android:id="@+id/buttonSend"
-        android:layout_below="@+id/imageLists"
+        android:layout_below="@+id/grid_view"
         android:layout_margin="5dp"
         android:text="@string/send"
         />
@@ -61,7 +59,7 @@
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:id="@+id/buttonAttachment"
-        android:layout_below="@+id/imageLists"
+        android:layout_below="@+id/grid_view"
         android:layout_alignParentRight="true"
         android:layout_margin="5dp"
         android:text="@string/attachment"/>
