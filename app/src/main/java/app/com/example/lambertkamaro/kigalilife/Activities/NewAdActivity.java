@@ -252,7 +252,7 @@ public class NewAdActivity extends ActionBarActivity implements OnClickListener{
                 }
             });
 
-            progressDialog = ProgressDialog.show(this, "", "Sending email...", true);
+//            progressDialog = ProgressDialog.show(this, "", "Sending email...", true);
 
             RetrieveFeedTask sendMailTask = new RetrieveFeedTask();
             sendMailTask.execute();
@@ -305,15 +305,16 @@ public class NewAdActivity extends ActionBarActivity implements OnClickListener{
                     multipart.addBodyPart(messageBodyPart);
 
                     // Part two is attachments to be added to the mail
-                    String imagePath = null;
-                    for (Iterator<String> file = attachmentFile.iterator(); file.hasNext();) {
-                        imagePath = file.next();
-                        DataSource source = new FileDataSource(imagePath);
+                    String filePath = null;
+
+                    for (int i=0; i < attachmentFile.size(); i++){
+                        filePath = attachmentFile.get(i);
+                        DataSource source = new FileDataSource(filePath);
+                        messageBodyPart = new MimeBodyPart();
                         messageBodyPart.setDataHandler(new DataHandler(source));
-                        messageBodyPart.setFileName(imagePath);
+                        messageBodyPart.setFileName(source.getName());
                         multipart.addBodyPart(messageBodyPart);
                     }
-
 
                     // Send the complete message parts
                     message.setContent(multipart);
@@ -343,9 +344,9 @@ public class NewAdActivity extends ActionBarActivity implements OnClickListener{
             // Remove all previous used content
             ediTextMessage.setText(null);
             editTextSubText.setText(null);
-            ivImage.setImageBitmap(null);
-
-            progressDialog.dismiss();
+            attachmentFile.clear();
+            imageAdaptor.notifyDataSetChanged();
+//            progressDialog.dismiss();
             Toast.makeText(getApplicationContext(),"Message sent",Toast.LENGTH_SHORT).show();
 
         }

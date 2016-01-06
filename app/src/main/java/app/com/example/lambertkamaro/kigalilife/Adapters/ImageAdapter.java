@@ -52,7 +52,7 @@ public class ImageAdapter extends BaseAdapter {
         bitmap = BitmapFactory.decodeFile(thumbnails.get(position));
         imageView.setImageBitmap(bitmap);
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        imageView.setLayoutParams(new GridView.LayoutParams(70, 70));
+        imageView.setLayoutParams(new GridView.LayoutParams(120, 120));
         return imageView;
     }
 
