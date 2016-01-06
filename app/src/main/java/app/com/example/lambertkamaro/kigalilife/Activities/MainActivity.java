@@ -13,14 +13,19 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+
 import android.support.v7.app.ActionBar;
 import android.text.Editable;
 import android.text.TextWatcher;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -31,6 +36,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonArrayRequest;
+
 
 public class MainActivity extends ActionBarActivity {
     // Log tag
@@ -71,15 +77,13 @@ public class MainActivity extends ActionBarActivity {
     private MenuItem searchAction;
 
     /** initially offset will be 0, later will be updated while parsing the json **/
-    private int offSet = 0;
+    ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        // Getting the list of movies to fill the list view.
         if (savedInstanceState != null) {
             adsList = savedInstanceState.getParcelableArrayList("ADS");
             searchOpened = savedInstanceState.getBoolean("SEARCH_OPENED");
@@ -115,8 +119,74 @@ public class MainActivity extends ActionBarActivity {
 
         // Load the ads in the database.
         this.loadAds();
+
+        this.setupTabs();
+
     }
 
+    public  void setupTabs(){
+        actionBar = getSupportActionBar();
+        actionBar.setNavigationMode(actionBar.NAVIGATION_MODE_TABS);
+
+        ActionBar.Tab tab1 = actionBar.newTab();
+        tab1.setText("Ads");
+        TabListener<Tab1Fragment> listener = new TabListener<Tab1Fragment>(this,
+                "Ads", Tab1Fragment.class);
+        tab1.setTabListener(listener);
+
+        ActionBar.Tab tab2 = actionBar.newTab();
+        tab2.setText("My Ads");
+
+        TabListener<Tab2Fragment> listener2 = new TabListener<Tab2Fragment>(this,
+                "MyAds", Tab2Fragment.class);
+        tab2.setTabListener(listener2);
+
+        actionBar.addTab(tab1);
+        actionBar.addTab(tab2);
+    }
+    private class TabListener<T extends Fragment> implements ActionBar.TabListener {
+        private android.support.v4.app.Fragment mFragment;
+        private final Activity mActivity;
+        private final String mTag;
+        private final Class<T> mClass;
+
+        /**
+         * Constructor used each time a new tab is created.
+         *
+         * @param activity
+         *            The host Activity, used to instantiate the fragment
+         * @param tag
+         *            The identifier tag for the fragment
+         * @param clz
+         *            The fragment's Class, used to instantiate the fragment
+         */
+        public TabListener(Activity activity, String tag, Class<T> clz) {
+            mActivity = activity;
+            mTag = tag;
+            mClass = clz;
+        }
+
+
+
+
+        @Override
+        public void onTabSelected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
+            Log.d("Selected Fragment is :",tab.getText().toString());
+        }
+
+        @Override
+        public void onTabUnselected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
+            if (mFragment != null) {
+                // Detach the fragment, because another one is being attached
+                fragmentTransaction.detach(mFragment);
+            }
+        }
+
+        @Override
+        public void onTabReselected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
+
+        }
+    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
