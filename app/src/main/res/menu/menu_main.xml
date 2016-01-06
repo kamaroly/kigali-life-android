@@ -13,7 +13,7 @@
         android:id="@+id/action_new_add"
         android:orderInCategory="200"
         android:title="@string/action_new_ad"
-        android:icon="@android:drawable/ic_input_add"
+        android:icon="@drawable/ic_action_new_event"
         android:actionLayout="@layout/activity_new_ad"
         app:showAsAction="always" />
 

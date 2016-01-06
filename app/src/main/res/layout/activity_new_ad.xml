@@ -44,24 +44,4 @@
 
     </GridView>
 
-    <!-- Buttons -->
-    <!-- Defining send mail button -->
-    <Button
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:id="@+id/buttonSend"
-        android:layout_below="@+id/grid_view"
-        android:layout_margin="5dp"
-        android:text="@string/send"
-        />
-    <!-- Defining Attachment button -->
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:id="@+id/buttonAttachment"
-        android:layout_below="@+id/grid_view"
-        android:layout_alignParentRight="true"
-        android:layout_margin="5dp"
-        android:text="@string/attachment"/>
-
 </RelativeLayout>

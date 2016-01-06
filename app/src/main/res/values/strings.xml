@@ -15,6 +15,11 @@
     <string name="attachment">Attachment</string>
     <string name="action_search" >Search</string>
     <string name="search_hint">Search...</string>
+    <string name="add_photo">Add photo</string>
+    <string name="select_file">Select File</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="from_library">Choose from Library</string>
+    <string name="cancel">Cancel</string>
     <!-- Names -->
     <string-array name="Member_names">
         <item>luxurious 7 seater Sofa on sell</item>

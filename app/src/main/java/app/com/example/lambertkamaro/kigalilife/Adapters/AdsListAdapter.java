@@ -23,7 +23,6 @@ import java.util.Locale;
 import app.com.example.lambertkamaro.kigalilife.Activities.AdDetailsActivity;
 import app.com.example.lambertkamaro.kigalilife.Controllers.AppController;
 import app.com.example.lambertkamaro.kigalilife.Models.AdModel;
-import app.com.example.lambertkamaro.kigalilife.Models.Movie;
 import app.com.example.lambertkamaro.kigalilife.R;
 
 
@@ -32,14 +31,14 @@ import app.com.example.lambertkamaro.kigalilife.R;
  * Created by Lambert.Kamaro on 1/3/2016.
  */
 
-public class CustomListAdapter extends BaseAdapter {
+public class AdsListAdapter extends BaseAdapter {
     private Activity activity;
     private LayoutInflater inflater;
     private List<AdModel> adItems;
     private ArrayList<AdModel> arraylist;
     ImageLoader imageLoader = AppController.getInstance().getImageLoader();
 
-    public CustomListAdapter(Activity activity, List<AdModel> adItems) {
+    public AdsListAdapter(Activity activity, List<AdModel> adItems) {
         this.activity = activity;
         this.adItems = adItems;
 
@@ -98,8 +97,8 @@ public class CustomListAdapter extends BaseAdapter {
         // release year
         year.setText(String.valueOf(ad.getMail_date()));
 
-        // Listen for ListView Item Click
-        // Listen for ListView Item Click
+        // Listen for ListView add Click
+        // Listen for ListView add Click
         convertView.setOnClickListener(new View.OnClickListener() {
 
             @Override

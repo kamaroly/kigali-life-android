@@ -1,5 +1,5 @@
 package app.com.example.lambertkamaro.kigalilife.Activities;
-import app.com.example.lambertkamaro.kigalilife.Adapters.CustomListAdapter;
+import app.com.example.lambertkamaro.kigalilife.Adapters.AdsListAdapter;
 import app.com.example.lambertkamaro.kigalilife.Controllers.AppController;
 import app.com.example.lambertkamaro.kigalilife.Helpers.DatabaseHelper;
 import app.com.example.lambertkamaro.kigalilife.Models.AdModel;
@@ -44,7 +44,7 @@ public class MainActivity extends ActionBarActivity {
 
     private ListView listView;
 
-    private CustomListAdapter adapter;
+    private AdsListAdapter adapter;
 
     /** an initial list of ads that we search through **/
     private List<AdModel> adsList;
@@ -102,7 +102,7 @@ public class MainActivity extends ActionBarActivity {
         listView = (ListView) findViewById(R.id.list);
 
         // Setting the list adapter. We fill the adapter with filtered list
-        adapter  = new CustomListAdapter(this,adsFiltered);
+        adapter  = new AdsListAdapter(this,adsFiltered);
 
         // Setting the list adapter. We fill the adapter with filtered list
         // because that is the list we want to show. The initial one we

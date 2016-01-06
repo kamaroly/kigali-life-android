@@ -15,13 +15,14 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -49,18 +50,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 
 import app.com.example.lambertkamaro.kigalilife.Adapters.ImageAdapter;
 import app.com.example.lambertkamaro.kigalilife.Models.MyAdsModel;
 import app.com.example.lambertkamaro.kigalilife.R;
 
-import static javax.mail.internet.InternetAddress.parse;
 
-public class NewAdActivity extends ActionBarActivity implements OnClickListener{
+public class NewAdActivity extends ActionBarActivity{
 
     private static final int REQUEST_CAMERA = 100;
     private  static  final int SELECT_FILE = 101;
@@ -68,10 +65,6 @@ public class NewAdActivity extends ActionBarActivity implements OnClickListener{
     ProgressDialog progressDialog = null;
     /** Declare edit Texts inputs for our interface**/
     EditText editTextSubText, ediTextMessage;
-    ImageView ivImage;
-
-    /** Declaring buttons **/
-    Button   buttonSend,buttonAttachment;
     /** Strings **/
     String email,subject,messageBody;
     ArrayList<String> attachmentFile = new ArrayList<String>();
@@ -91,17 +84,11 @@ public class NewAdActivity extends ActionBarActivity implements OnClickListener{
         editTextSubText = (EditText) findViewById(R.id.editTextSubject);
         ediTextMessage  = (EditText) findViewById(R.id.editTextMessage);
 
-        buttonSend = (Button) findViewById(R.id.buttonSend);
-        buttonAttachment = (Button) findViewById(R.id.buttonAttachment);
-
         GridView gridView = (GridView) findViewById(R.id.grid_view);
 
         // Instance of ImageAdapter Class
         imageAdaptor = new ImageAdapter(this,attachmentFile);
         gridView.setAdapter(imageAdaptor);
-
-        buttonSend.setOnClickListener(this);
-        buttonAttachment.setOnClickListener(this);
     }
 
     @Override
@@ -182,24 +169,28 @@ public class NewAdActivity extends ActionBarActivity implements OnClickListener{
      * Method to open gallery
      */
     private void selectImage() {
-        final CharSequence[] items = { "Take Photo", "Choose from Library", "Cancel" };
+        // Define what will be shown on our popup
+        final String add_photo = getResources().getString(R.string.add_photo);
+        final String takePhoto =  getResources().getString(R.string.take_photo);
+        final String fromLibrary = getResources().getString(R.string.from_library);
+        final String cancel  = getResources().getString(R.string.cancel);
+        final String selectFile = getResources().getString(R.string.select_file);
+
+        final CharSequence[] items = {takePhoto,fromLibrary,cancel};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(NewAdActivity.this);
-        builder.setTitle("Add Photo!");
+        builder.setTitle(add_photo);
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int item)
-            {
+            public void onClick(DialogInterface dialog, int item) {
                 // Does use want to take a picture ?
-                if (items[item].equals("Take Photo"))
-                {
+                if (items[item].equals(takePhoto)) {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                     startActivityForResult(intent, REQUEST_CAMERA);
                 }
                 // User want to take image from the library
-                else if (items[item].equals("Choose from Library"))
-                {
+                else if (items[item].equals(fromLibrary)) {
                     Intent intent = new Intent(
                             Intent.ACTION_PICK,
                             android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -207,10 +198,10 @@ public class NewAdActivity extends ActionBarActivity implements OnClickListener{
                     intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                     intent.setType("image/*");
                     startActivityForResult(
-                            Intent.createChooser(intent, "Select File"),
+                            Intent.createChooser(intent, selectFile),
                             SELECT_FILE);
                     // Use want to cancel this
-                } else if (items[item].equals("Cancel")) {
+                } else if (items[item].equals(cancel)) {
                     dialog.dismiss();
                 }
             }
@@ -261,6 +252,7 @@ public class NewAdActivity extends ActionBarActivity implements OnClickListener{
             Toast.makeText(this, "Request Failed, Try again..."+t.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
+
 
     /**
      * Class to process images
@@ -352,18 +344,15 @@ public class NewAdActivity extends ActionBarActivity implements OnClickListener{
         }
     }
 
+
+
     @Override
-    public void onClick(View view) {
-        // Determine the clicked on view
-        if (view == buttonAttachment){
-            selectImage();
-        }
-
-        if (view == buttonSend){
-            sendMail();
-        }
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.new_ad_menu, menu);
+        super.onCreateOptionsMenu(menu);
+        return true;
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -376,6 +365,12 @@ public class NewAdActivity extends ActionBarActivity implements OnClickListener{
         switch (id) {
             case android.R.id.home:
                 onBackPressed();
+                return true;
+            case R.id.action_attachment:
+                selectImage();
+                return true;
+            case R.id.action_send:
+                sendMail();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
