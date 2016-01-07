@@ -1,5 +1,6 @@
 package app.com.example.lambertkamaro.kigalilife.Activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -7,6 +8,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
+import android.view.MenuItem;
 
 import app.com.example.lambertkamaro.kigalilife.Adapters.FragmentTabPagerAdapter;
 import app.com.example.lambertkamaro.kigalilife.R;
@@ -83,5 +85,27 @@ public class MainActivity extends ActionBarActivity {
                 .setTabListener(tabListener);
 
         mActionbar.addTab(tab);
+    }
+
+    /** OPTIONS MENU SECTION **/
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        switch (id) {
+            case R.id.action_new_add:
+                Intent newAd = new Intent(MainActivity.this,NewAdActivity.class);
+                startActivity(newAd);
+                return true;
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
