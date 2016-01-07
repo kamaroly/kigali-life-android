@@ -22,29 +22,18 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.JsonArrayRequest;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import app.com.example.lambertkamaro.kigalilife.Adapters.AdsListAdapter;
-import app.com.example.lambertkamaro.kigalilife.Controllers.AppController;
+import app.com.example.lambertkamaro.kigalilife.Adapters.MyAdsListAdapter;
 import app.com.example.lambertkamaro.kigalilife.Helpers.DatabaseHelper;
-import app.com.example.lambertkamaro.kigalilife.Models.AdModel;
+import app.com.example.lambertkamaro.kigalilife.Models.MyAdsModel;
 import app.com.example.lambertkamaro.kigalilife.R;
 
-public class Fragment1 extends Fragment {
+public class MyAdsFragment extends Fragment {
 
     /** Logs Tag **/
-    private static final String TAG = Fragment1.class.getSimpleName();
+    private static final String TAG = AdsFragment.class.getSimpleName();
 
     /**  Movies json url **/
     private static final String url = "http://api.androidhive.info/json/movies.json";
@@ -56,13 +45,13 @@ public class Fragment1 extends Fragment {
     private ListView listView;
 
     /** an initial list of ads that we search through **/
-    private List<AdModel> adsList;
+    private List<MyAdsModel> adsList;
 
     /** a post-search filtered list of ads **/
-    private List<AdModel> adsFiltered;
+    private List<MyAdsModel> adsFiltered;
 
     /** Adaptor for our ads **/
-    private AdsListAdapter adapter;
+    private MyAdsListAdapter adapter;
 
     /** keeps track if the search bar is opened **/
     private boolean searchOpened;
@@ -111,7 +100,7 @@ public class Fragment1 extends Fragment {
                              Bundle savedInstanceState) {
 
         // Get global view for this fragment
-        view = inflater.inflate(R.layout.fragment1, null);
+        view = inflater.inflate(R.layout.fragment2, null);
 
         if (savedInstanceState != null) {
             adsList = savedInstanceState.getParcelableArrayList("ADS");
@@ -122,7 +111,7 @@ public class Fragment1 extends Fragment {
         else {
             // Get ads we  have in the db
             db = new DatabaseHelper(currentActivity.getApplicationContext());
-            adsList =  db.getAllAds();
+            adsList =  db.getAllmyAds();
             adsFiltered = adsList;
             searchOpened = false;
             searchQuery = "";
@@ -136,7 +125,7 @@ public class Fragment1 extends Fragment {
         listView = (ListView) view.findViewById(R.id.list);
 
         // Setting the list adapter. We fill the adapter with filtered list
-        adapter  = new AdsListAdapter(currentActivity,adsFiltered);
+        adapter  = new MyAdsListAdapter(currentActivity,adsFiltered);
 
         // Setting the list adapter. We fill the adapter with filtered list
         // because that is the list we want to show. The initial one we
@@ -148,8 +137,6 @@ public class Fragment1 extends Fragment {
         }
 
         // Load the ads in the database.
-        this.loadAds();
-
         return  view;
     }
 
@@ -192,8 +179,8 @@ public class Fragment1 extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList("ADS", (ArrayList<AdModel>) adsList);
-        outState.putParcelableArrayList("ADS", (ArrayList<AdModel>) adsFiltered);
+        outState.putParcelableArrayList("ADS", (ArrayList<MyAdsModel>) adsList);
+        outState.putParcelableArrayList("ADS_FILTERED", (ArrayList<MyAdsModel>) adsFiltered);
         outState.putBoolean("SEARCH_OPENED", searchOpened);
         outState.putString("SEARCH_QUERY", searchQuery);
     }
@@ -246,52 +233,6 @@ public class Fragment1 extends Fragment {
             searchQuery = searchEditText.getText().toString();
             adapter.filter(searchQuery);
         }
-    }
-
-
-    /*** LOADING ADS SECTION **/
-    public  void loadAds(){
-        // Creating volley request obj
-        JsonArrayRequest adsRequest = new JsonArrayRequest(url,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-
-                        // Parsing json
-                        for (int i = 0; i < response.length(); i++) {
-                            try {
-
-                                JSONObject obj = response.getJSONObject(i);
-                                AdModel ad  = new AdModel();
-                                ad.setSubject(obj.getString("title"));
-                                ad.setBody(obj.getString("title") + obj.getString("title") + obj.getString("title"));
-                                ad.setMail_date(new Date().toString());
-                                ad.setMessage_id("23423423");
-                                ad.setOwner("kamaroly");
-                                ad.setFiles(obj.getString("image"));
-                                // adding ad to ads array
-                                db.createAd(ad);
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-
-                        // notifying list adapter about data changes
-                        // so that it renders the list view with updated data
-
-                        adapter.notifyDataSetChanged();
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                VolleyLog.d(TAG, "Error: " + error.getMessage());
-            }
-        });
-
-        // Adding request to request queue
-        AppController.getInstance().addToRequestQueue(adsRequest);
     }
 
 }

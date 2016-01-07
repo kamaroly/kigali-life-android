@@ -8,8 +8,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import app.com.example.lambertkamaro.kigalilife.Fragments.Fragment1;
-import app.com.example.lambertkamaro.kigalilife.Fragments.Fragment2;
+import app.com.example.lambertkamaro.kigalilife.Fragments.AdsFragment;
+import app.com.example.lambertkamaro.kigalilife.Fragments.MyAdsFragment;
 
 public class FragmentTabPagerAdapter extends FragmentPagerAdapter{
 
@@ -28,13 +28,13 @@ public class FragmentTabPagerAdapter extends FragmentPagerAdapter{
 
             /** tab1 is selected */
             case 0:
-                Fragment1 fragment1 = new Fragment1();
-                return fragment1;
+                AdsFragment adsFragment = new AdsFragment();
+                return adsFragment;
 
             /** tab2 is selected */
             case 1:
-                Fragment2 fragment2 = new Fragment2();
-                return fragment2;
+                MyAdsFragment myAdsFragment = new MyAdsFragment();
+                return myAdsFragment;
         }
         return null;
     }
