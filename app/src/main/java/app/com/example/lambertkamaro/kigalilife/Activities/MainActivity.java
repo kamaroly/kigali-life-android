@@ -8,7 +8,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
 
-import app.com.example.lambertkamaro.kigalilife.Adapters.MyFragmentPagerAdapter;
+import app.com.example.lambertkamaro.kigalilife.Adapters.FragmentTabPagerAdapter;
 import app.com.example.lambertkamaro.kigalilife.R;
 
 public class MainActivity extends ActionBarActivity {
@@ -45,10 +45,10 @@ public class MainActivity extends ActionBarActivity {
         /** Setting the pageChange listener to the viewPager */
         mPager.setOnPageChangeListener(pageChangeListener);
 
-        /** Creating an instance of FragmentPagerAdapter */
-        MyFragmentPagerAdapter fragmentPagerAdapter = new MyFragmentPagerAdapter(fm);
+        /** Creating an instance of  */
+        FragmentTabPagerAdapter fragmentPagerAdapter = new FragmentTabPagerAdapter(fm);
 
-        /** Setting the FragmentPagerAdapter object to the viewPager object */
+        /** Setting the  object to the viewPager object */
         mPager.setAdapter(fragmentPagerAdapter);
 
         mActionbar.setDisplayShowTitleEnabled(true);

@@ -11,12 +11,12 @@ import android.support.v4.app.FragmentPagerAdapter;
 import app.com.example.lambertkamaro.kigalilife.Fragments.Fragment1;
 import app.com.example.lambertkamaro.kigalilife.Fragments.Fragment2;
 
-public class MyFragmentPagerAdapter extends FragmentPagerAdapter{
+public class FragmentTabPagerAdapter extends FragmentPagerAdapter{
 
     final int PAGE_COUNT = 2;
 
     /** Constructor of the class */
-    public MyFragmentPagerAdapter(FragmentManager fm) {
+    public FragmentTabPagerAdapter(FragmentManager fm) {
         super(fm);
     }
 
