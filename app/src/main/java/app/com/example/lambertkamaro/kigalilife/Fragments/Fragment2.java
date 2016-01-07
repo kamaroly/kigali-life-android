@@ -220,6 +220,7 @@ public class Fragment2 extends Fragment {
         actionBar.setDisplayShowCustomEnabled(false);
         // Change search icon accordingly.
         searchAction.setIcon(iconOpenSearch);
+        searchQuery = null;
         searchOpened = false;
     }
 
