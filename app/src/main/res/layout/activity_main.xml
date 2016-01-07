@@ -9,13 +9,9 @@
     tools:context=".Activities.MainActivity" >
 
 
-    <ListView
-        android:id="@+id/list"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:divider="@color/list_divider"
-
-        android:dividerHeight="1dp"
-        android:listSelector="@drawable/list_row_selector" />
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>
