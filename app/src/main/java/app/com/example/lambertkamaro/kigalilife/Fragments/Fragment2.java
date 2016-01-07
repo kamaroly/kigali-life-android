@@ -22,4 +22,5 @@ public class Fragment2 extends Fragment {
         return rootView;
     }
 
+
 }

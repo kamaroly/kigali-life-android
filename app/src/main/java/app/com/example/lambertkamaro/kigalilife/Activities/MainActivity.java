@@ -72,16 +72,18 @@ public class MainActivity extends ActionBarActivity {
             }
         };
 
-        /** Creating fragment1 Tab */
+        String adsTab = getResources().getString(R.string.tab_ads);
+        String myAdsTab = getResources().getString(R.string.tab_my_Ads);
+        /** Creating Ads Tab */
         Tab tab = mActionbar.newTab()
-                .setText("Tab1")
+                .setText(adsTab)
                 .setTabListener(tabListener);
 
         mActionbar.addTab(tab);
 
-        /** Creating fragment2 Tab */
+        /** Creating myAds Tab */
         tab = mActionbar.newTab()
-                .setText("Tab2")
+                .setText(myAdsTab)
                 .setTabListener(tabListener);
 
         mActionbar.addTab(tab);
