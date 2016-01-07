@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -53,29 +54,36 @@ import java.util.Arrays;
 import java.util.Properties;
 
 import app.com.example.lambertkamaro.kigalilife.Adapters.ImageAdapter;
+import app.com.example.lambertkamaro.kigalilife.Helpers.DatabaseHelper;
 import app.com.example.lambertkamaro.kigalilife.Models.MyAdsModel;
 import app.com.example.lambertkamaro.kigalilife.R;
+import app.com.example.lambertkamaro.kigalilife.Tasks.SendMailTask;
 
 
 public class NewAdActivity extends ActionBarActivity{
 
     private static final int REQUEST_CAMERA = 100;
     private  static  final int SELECT_FILE = 101;
-    Session session = null;
-    ProgressDialog progressDialog = null;
     /** Declare edit Texts inputs for our interface**/
     EditText editTextSubText, ediTextMessage;
     /** Strings **/
     String email,subject,messageBody;
     ArrayList<String> attachmentFile = new ArrayList<String>();
 
+    /** SETTING UP OUR IMAGE ADAPTER **/
     ImageAdapter imageAdaptor;
 
+    /** Getting our DATABASE **/
+    DatabaseHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_ad);
+
+        // Initiating our DATABASE HELPER
+        db = new DatabaseHelper(getApplicationContext());
+
         this.addBackButtonInActionBar();
         this.newAdManager();
     }
@@ -154,7 +162,6 @@ public class NewAdActivity extends ActionBarActivity{
 
         String selectedImagePath = cursor.getString(column_index);
 
-        Bitmap bm;
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(selectedImagePath, options);
@@ -218,132 +225,34 @@ public class NewAdActivity extends ActionBarActivity{
           email = "kamaroly@gmail.com";
           subject = editTextSubText.getText().toString();
           messageBody = ediTextMessage.getText().toString();
-        MyAdsModel ad = new MyAdsModel();
+          MyAdsModel myAd = new MyAdsModel();
 
-        ad.setSubject(subject);
-        ad.setBody(messageBody);
-        ad.setOwner("kamaroly");
-        JSONArray files = new JSONArray(Arrays.asList(attachmentFile));
-        ad.setFiles(files.toString());
+          myAd.setSubject(subject);
+          myAd.setBody(messageBody);
+          myAd.setOwner("gerageza@gmail.com");
+
+          String filePaths;
+          // Convert files to string
+          JSONArray files = new JSONArray(Arrays.asList(attachmentFile));
+
+           // Make sure no escape characters are here
+           filePaths = files.toString().replaceAll("\\\\", "");
+           myAd.setFiles(filePaths);
+           Log.e("JSON FILES",filePaths);
+          // Now insert into database
+          db.createMyAd(myAd);
 
         try {
-
-            Properties props = new Properties();
-            props.put("mail.smtp.host","smtp.gmail.com");
-            props.put("mail.smtp.port", "465");
-            props.put("mail.smtp.socketFactory.port", "465");
-            props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-            props.put("mail.smtp.socketFactory.fallback", "false");
-            props.put("mail.smtp.auth", "true");
-
-            session = Session.getDefaultInstance(props, new Authenticator() {
-                @Override
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication("gerageza@gmail.com", "Hard2g3t1n!");
-                }
-            });
-
-//            progressDialog = ProgressDialog.show(this, "", "Sending email...", true);
-
-            RetrieveFeedTask sendMailTask = new RetrieveFeedTask();
+            SendMailTask sendMailTask = new SendMailTask(myAd);
             sendMailTask.execute();
+            this.clearForm();
+            // Go back to the mail activity
+            onBackPressed();
         }
         catch (Throwable t){
             Toast.makeText(this, "Request Failed, Try again..."+t.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
-
-
-    /**
-     * Class to process images
-     */
-    public class RetrieveFeedTask extends AsyncTask<String,Void, String> {
-        private String[] to = {"kamaroly@gmail.com"};
-        private String from="gerageza@gmail.com";
-
-        @Override
-        protected String doInBackground(String... strings) {
-
-            try {
-
-                // Create a default MimeMessage object.
-                Message message =  new MimeMessage(session);
-
-                // Set From: header field of the header.
-                message.setFrom(new InternetAddress(from));
-
-                // Set To: header field of the header.
-                InternetAddress[] addressTo = new InternetAddress[to.length];
-                for (int i = 0; i < to.length; i++) {
-                    addressTo[i] = new InternetAddress(to[i]);
-                }
-                message.setRecipients(MimeMessage.RecipientType.TO, addressTo);
-
-                // Set Subject: header field
-                message.setSubject(subject);
-
-                // If we have attachment then process it
-                if (attachmentFile.size() > 0) {
-                    // Create the message part
-                    BodyPart messageBodyPart = new MimeBodyPart();
-
-                    // Fill the message
-                    messageBodyPart.setText(messageBody);
-
-                    // Create a multipar message
-                    Multipart multipart = new MimeMultipart("mixed");
-
-                    // Set text message part
-                    multipart.addBodyPart(messageBodyPart);
-
-                    // Part two is attachments to be added to the mail
-                    String filePath = null;
-
-                    for (int i=0; i < attachmentFile.size(); i++){
-                        filePath = attachmentFile.get(i);
-                        DataSource source = new FileDataSource(filePath);
-                        messageBodyPart = new MimeBodyPart();
-                        messageBodyPart.setDataHandler(new DataHandler(source));
-                        messageBodyPart.setFileName(source.getName());
-                        multipart.addBodyPart(messageBodyPart);
-                    }
-
-                    // Send the complete message parts
-                    message.setContent(multipart);
-                }
-                else{ // We don't have attachment then send just a plain text email
-
-                    // Send the actual HTML message, as big as you like
-                    message.setContent(messageBody, "text/html" );
-                }
-                // send email
-                Transport.send(message);
-            }
-            catch (MessagingException exception)
-            {
-                exception.printStackTrace();
-
-            }
-            catch (Exception exception){
-                exception.printStackTrace();
-            }
-            return "";
-        }
-
-        @Override
-        protected void onPostExecute(String results) {
-
-            // Remove all previous used content
-            ediTextMessage.setText(null);
-            editTextSubText.setText(null);
-            attachmentFile.clear();
-            imageAdaptor.notifyDataSetChanged();
-//            progressDialog.dismiss();
-            Toast.makeText(getApplicationContext(),"Message sent",Toast.LENGTH_SHORT).show();
-
-        }
-    }
-
 
 
     @Override
@@ -376,6 +285,14 @@ public class NewAdActivity extends ActionBarActivity{
                 return super.onOptionsItemSelected(item);
         }
     }
+    /** Clear data from from **/
+    private void clearForm(){
+        // Remove all previous used content
+        ediTextMessage.setText(null);
+        editTextSubText.setText(null);
+        attachmentFile.clear();
+        imageAdaptor.notifyDataSetChanged();
+    }
     /**
      * Show add button in the actionBar
      */
@@ -383,6 +300,4 @@ public class NewAdActivity extends ActionBarActivity{
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
     }
-
-
 }

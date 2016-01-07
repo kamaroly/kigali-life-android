@@ -217,7 +217,6 @@ public class Fragment1 extends Fragment {
     }
 
     private void closeSearchBar() {
-
         // Remove custom view.
         actionBar.setDisplayShowCustomEnabled(false);
         // Change search icon accordingly.

@@ -113,6 +113,9 @@ public class Fragment2 extends Fragment {
         // Get global view for this fragment
         view = inflater.inflate(R.layout.fragment2, null);
 
+        // Get ads we  have in the db
+        db = new DatabaseHelper(currentActivity.getApplicationContext());
+
         if (savedInstanceState != null) {
             adsList = savedInstanceState.getParcelableArrayList("ADS");
             searchOpened = savedInstanceState.getBoolean("SEARCH_OPENED");
@@ -120,8 +123,7 @@ public class Fragment2 extends Fragment {
             adsFiltered = savedInstanceState.getParcelableArrayList("ADS_FILTERED");
         }
         else {
-            // Get ads we  have in the db
-            db = new DatabaseHelper(currentActivity.getApplicationContext());
+
             adsList =  db.getAllmyAds();
             adsFiltered = adsList;
             searchOpened = false;
@@ -162,6 +164,7 @@ public class Fragment2 extends Fragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         searchAction = menu.findItem(R.id.action_search);
+
         super.onPrepareOptionsMenu(menu);
     }
 

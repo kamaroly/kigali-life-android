@@ -43,24 +43,6 @@
         <item>TOYOTA LANDCRUISER PRADO - 4 X 4 ALL TERRAIN</item>
     </string-array>
 
-    <!-- Pictures -->
-    <array name="profile_pics">
-        <item>@drawable/pavand_pic</item>
-        <item>@drawable/daya_pic</item>
-        <item>@drawable/pavanb_pic</item>
-        <item>@drawable/pavand_pic</item>
-        <item>@drawable/daya_pic</item>
-        <item>@drawable/pavanb_pic</item>
-        <item>@drawable/pavand_pic</item>
-        <item>@drawable/daya_pic</item>
-        <item>@drawable/pavanb_pic</item>
-        <item>@drawable/pavand_pic</item>
-        <item>@drawable/daya_pic</item>
-        <item>@drawable/pavanb_pic</item>
-        <item>@drawable/pavand_pic</item>
-        <item>@drawable/daya_pic</item>
-        <item>@drawable/pavanb_pic</item>
-    </array>
 
     <!-- Status -->
     <string-array name="statuses">

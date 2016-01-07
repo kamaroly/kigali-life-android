@@ -249,7 +249,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_MESSAGE_ID, ad.getMessage_id());
         values.put(KEY_MAIL_DATE, ad.getMail_date());
         values.put(KEY_CREATED_AT,getDateTime());
-        values.put(KEY_UPDATED_AT,getDateTime());
+        values.put(KEY_UPDATED_AT, getDateTime());
 
         // updating row
         return db.update(TABLE_ADS, values, KEY_ID + " = ?",
@@ -266,11 +266,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
+    /**
+     * Deleting aLL MyAd
+     */
+    public void deleteAllAd() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_ADS, null,null);
+    }
+
+
+
     /** ------------------------ "MyAds" table methods ----------------**/
     /*
      * Creating a My Ads
      */
-    public long createMyAd(MyAdsModel myAd, long[] tag_ids) {
+    public long createMyAd(MyAdsModel myAd) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -287,9 +297,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
         // insert row
-        long myad_id = db.insert(TABLE_MYADS, null, values);
-
-        return myad_id;
+        return db.insert(TABLE_MYADS, null, values);
     }
 
     /** Find single MyAds **/
@@ -381,7 +389,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_IS_SENT, myAd.getIs_sent());
         values.put(KEY_IS_REOCCURING, myAd.getIs_reoccuring());
         values.put(KEY_CREATED_AT,getDateTime());
-        values.put(KEY_UPDATED_AT,getDateTime());
+        values.put(KEY_UPDATED_AT, getDateTime());
 
         // updating row
         return db.update(TABLE_MYADS, values, KEY_ID + " = ?",
@@ -395,6 +403,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_MYADS, KEY_ID + " = ?",
                 new String[]{String.valueOf(ad_id)});
+    }
+
+    /**
+     * Deleting aLL MyAd
+     */
+    public void deleteAllMyAd() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_MYADS, null,null);
     }
 
 

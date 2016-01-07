@@ -7,10 +7,14 @@ package app.com.example.lambertkamaro.kigalilife.Adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
@@ -22,7 +26,7 @@ import java.util.Locale;
 
 import app.com.example.lambertkamaro.kigalilife.Activities.AdDetailsActivity;
 import app.com.example.lambertkamaro.kigalilife.Controllers.AppController;
-import app.com.example.lambertkamaro.kigalilife.Models.AdModel;
+import app.com.example.lambertkamaro.kigalilife.Helpers.StringHelpers;
 import app.com.example.lambertkamaro.kigalilife.Models.MyAdsModel;
 import app.com.example.lambertkamaro.kigalilife.R;
 
@@ -36,15 +40,17 @@ public class MyAdsListAdapter extends BaseAdapter {
     private Activity activity;
     private LayoutInflater inflater;
     private List<MyAdsModel> adItems;
-    private ArrayList<MyAdsModel> arraylist;
+    private ArrayList<MyAdsModel> arrayList;
+    ArrayList<String> attachmentFile = new ArrayList<String>();
+
     ImageLoader imageLoader = AppController.getInstance().getImageLoader();
 
     public MyAdsListAdapter(Activity activity, List<MyAdsModel> adItems) {
         this.activity = activity;
         this.adItems = adItems;
 
-        this.arraylist = new ArrayList<MyAdsModel>();
-        this.arraylist.addAll(adItems);
+        this.arrayList = new ArrayList<MyAdsModel>();
+        this.arrayList.addAll(adItems);
     }
 
     @Override
@@ -69,12 +75,11 @@ public class MyAdsListAdapter extends BaseAdapter {
             inflater = (LayoutInflater) activity
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if (convertView == null)
-            convertView = inflater.inflate(R.layout.list_row, null);
+            convertView = inflater.inflate(R.layout.list_my_ads_row, null);
 
         if (imageLoader == null)
             imageLoader = AppController.getInstance().getImageLoader();
-        NetworkImageView thumbNail = (NetworkImageView) convertView
-                .findViewById(R.id.thumbnail);
+        ImageView thumbNail = (ImageView) convertView.findViewById(R.id.thumbnail);
         TextView title = (TextView) convertView.findViewById(R.id.title);
         TextView rating = (TextView) convertView.findViewById(R.id.rating);
         TextView genre = (TextView) convertView.findViewById(R.id.genre);
@@ -84,8 +89,22 @@ public class MyAdsListAdapter extends BaseAdapter {
         MyAdsModel ad = adItems.get(position);
 
         // thumbnail image
-        thumbNail.setImageUrl(ad.getFiles(), imageLoader);
+        StringHelpers stringHelper = new StringHelpers();
+       try
+       {
+           String imageFile;
+           attachmentFile = stringHelper.jsonStringToArray(ad.getFiles());
 
+           if (attachmentFile.size() > 0 ) {
+               Bitmap bitmap;
+               imageFile = attachmentFile.get(0);
+               bitmap = BitmapFactory.decodeFile(imageFile);
+               thumbNail.setImageBitmap(bitmap);
+           }
+       }
+       catch (Exception e){
+           Log.e(" Error",e.getLocalizedMessage());
+       }
         // title
         title.setText(ad.getSubject());
 
@@ -125,11 +144,11 @@ public class MyAdsListAdapter extends BaseAdapter {
         charText = charText.toLowerCase(Locale.getDefault());
         adItems.clear();
         if (charText.length() == 0) {
-            adItems.addAll(arraylist);
+            adItems.addAll(arrayList);
         }
         else
         {
-            for (MyAdsModel ad : arraylist)
+            for (MyAdsModel ad : arrayList)
             {
                 if (ad.getSubject().toLowerCase(Locale.getDefault()).contains(charText) || ad.getBody().toLowerCase(Locale.getDefault()).contains(charText))
                 {
