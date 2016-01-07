@@ -22,32 +22,15 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.JsonArrayRequest;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import app.com.example.lambertkamaro.kigalilife.Adapters.AdsListAdapter;
-import app.com.example.lambertkamaro.kigalilife.Controllers.AppController;
 import app.com.example.lambertkamaro.kigalilife.Helpers.DatabaseHelper;
 import app.com.example.lambertkamaro.kigalilife.Models.AdModel;
 import app.com.example.lambertkamaro.kigalilife.R;
 
 public class Fragment1 extends Fragment {
-
-    /** Logs Tag **/
-    private static final String TAG = Fragment1.class.getSimpleName();
-
-    /**  Movies json url **/
-    private static final String url = "http://api.androidhive.info/json/movies.json";
 
     /** Database helper **/
     DatabaseHelper db;
@@ -147,9 +130,6 @@ public class Fragment1 extends Fragment {
             openSearchBar(searchQuery);
         }
 
-        // Load the ads in the database.
-        this.loadAds();
-
         return  view;
     }
 
@@ -244,52 +224,6 @@ public class Fragment1 extends Fragment {
             searchQuery = searchEditText.getText().toString();
             adapter.filter(searchQuery);
         }
-    }
-
-
-    /*** LOADING ADS SECTION **/
-    public  void loadAds(){
-        // Creating volley request obj
-        JsonArrayRequest adsRequest = new JsonArrayRequest(url,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-
-                        // Parsing json
-                        for (int i = 0; i < response.length(); i++) {
-                            try {
-
-                                JSONObject obj = response.getJSONObject(i);
-                                AdModel ad  = new AdModel();
-                                ad.setSubject(obj.getString("title"));
-                                ad.setBody(obj.getString("title") + obj.getString("title") + obj.getString("title"));
-                                ad.setMail_date(new Date().toString());
-                                ad.setMessage_id("23423423");
-                                ad.setOwner("kamaroly");
-                                ad.setFiles(obj.getString("image"));
-                                // adding ad to ads array
-                                db.createAd(ad);
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-
-                        // notifying list adapter about data changes
-                        // so that it renders the list view with updated data
-
-                        adapter.notifyDataSetChanged();
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                VolleyLog.d(TAG, "Error: " + error.getMessage());
-            }
-        });
-
-        // Adding request to request queue
-        AppController.getInstance().addToRequestQueue(adsRequest);
     }
 
 }

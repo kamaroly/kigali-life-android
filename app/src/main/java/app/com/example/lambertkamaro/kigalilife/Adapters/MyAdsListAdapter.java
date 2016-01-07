@@ -115,7 +115,7 @@ public class MyAdsListAdapter extends BaseAdapter {
         genre.setText(ad.getSubject());
 
         // release year
-        year.setText(String.valueOf(ad.getMail_date()));
+        year.setText(String.valueOf(ad.getCreated_at()));
 
         // Listen for ListView add Click
         // Listen for ListView add Click

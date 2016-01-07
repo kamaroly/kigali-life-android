@@ -132,6 +132,8 @@ public class SendMailTask extends AsyncTask<String,Void, String> {
             myAd.setIs_sent(1);
             db.updateMyAds(myAd);
             response = "message sent";
+
+            Log.e(" Mail status", response);
         }
         catch (MessagingException exception)
         {

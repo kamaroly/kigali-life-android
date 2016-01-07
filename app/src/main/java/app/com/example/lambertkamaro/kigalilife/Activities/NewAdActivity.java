@@ -244,7 +244,7 @@ public class NewAdActivity extends ActionBarActivity{
 
         try {
             SendMailTask sendMailTask = new SendMailTask(myAd);
-            sendMailTask.execute();
+            sendMailTask.sendMail();
             this.clearForm();
             // Go back to the mail activity
             onBackPressed();

@@ -12,6 +12,7 @@ import android.view.MenuItem;
 
 import app.com.example.lambertkamaro.kigalilife.Adapters.FragmentTabPagerAdapter;
 import app.com.example.lambertkamaro.kigalilife.R;
+import app.com.example.lambertkamaro.kigalilife.Services.SyncWithServerService;
 
 public class MainActivity extends ActionBarActivity {
     private ViewPager mPager;
@@ -22,6 +23,8 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        this.startServices();
 
         /** Getting a reference to action bar of this activity */
         mActionbar = getSupportActionBar();
@@ -87,6 +90,13 @@ public class MainActivity extends ActionBarActivity {
                 .setTabListener(tabListener);
 
         mActionbar.addTab(tab);
+    }
+
+    /** MAKE SURE OUR SERVICES ARE RUNNING **/
+    private void startServices() {
+        /** START SERVICE TO LOAD  ADS **/
+        startService(new Intent(getBaseContext(),SyncWithServerService.class));
+
     }
 
     /** OPTIONS MENU SECTION **/

@@ -137,7 +137,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /** Find single AD **/
     public AdModel getAd(long ad_id){
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM "+TABLE_ADS +" WHERE "+KEY_ID+" = "+ad_id;
+        String query = "SELECT * FROM "+TABLE_ADS +" WHERE "+KEY_ID+" = "+ad_id+" ORDER BY "+KEY_CREATED_AT+" DESC";
 
         Cursor results = db.rawQuery(query,null);
 
@@ -163,7 +163,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /** Get all ads **/
     public List<AdModel> getAllAds(){
         List<AdModel> ads = new ArrayList<AdModel>();
-        String query = "SELECT * FROM "+TABLE_ADS;
+        String query = "SELECT * FROM "+TABLE_ADS+" ORDER BY "+KEY_CREATED_AT+" DESC";
 
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -303,7 +303,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /** Find single MyAds **/
     public MyAdsModel getMyAd(long ad_id){
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM "+TABLE_MYADS +" WHERE "+KEY_ID+" = "+ad_id;
+        String query = "SELECT * FROM "+TABLE_MYADS +" WHERE "+KEY_ID+" = "+ad_id +" ORDER BY "+KEY_CREATED_AT+" DESC";
 
         Cursor results = db.rawQuery(query, null);
 
@@ -328,10 +328,43 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return ad;
     }
 
+    /** Find single MyAds **/
+    public List<MyAdsModel> getNonSentMyAds(){
+        List<MyAdsModel> myads = new ArrayList<MyAdsModel>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM "+TABLE_MYADS +" WHERE "+KEY_IS_SENT+" <> 1 ORDER BY "+KEY_CREATED_AT+" DESC";
+
+        Cursor results = db.rawQuery(query,null);
+
+        // looping through all rows and adding to list
+        if (results.moveToFirst()) {
+            do {
+                // Add information to the model
+                MyAdsModel ad = new MyAdsModel();
+                ad.setId(results.getInt(results.getColumnIndex(KEY_ID)));
+                ad.setSubject(results.getString(results.getColumnIndex(KEY_SUBJECT)));
+                ad.setBody(results.getString(results.getColumnIndex(KEY_BODY)));
+                ad.setMail_date(results.getString(results.getColumnIndex(KEY_MAIL_DATE)));
+                ad.setMessage_id(results.getString(results.getColumnIndex(KEY_MESSAGE_ID)));
+                ad.setOwner(results.getString(results.getColumnIndex(KEY_OWNER)));
+                ad.setFiles(results.getString(results.getColumnIndex(KEY_FILES)));
+                ad.setIs_sent(results.getInt(results.getColumnIndex(KEY_IS_SENT)));
+                ad.setIs_reoccuring(results.getInt(results.getColumnIndex(KEY_IS_REOCCURING)));
+                ad.setCreated_at(results.getString(results.getColumnIndex(KEY_CREATED_AT)));
+                ad.setCreated_at(results.getString(results.getColumnIndex(KEY_UPDATED_AT)));
+
+                // adding to todo list
+                myads.add(ad);
+            } while (results.moveToNext());
+        }
+
+        return myads;
+    }
+
     /** Get all myads **/
     public List<MyAdsModel> getAllmyAds(){
         List<MyAdsModel> myads = new ArrayList<MyAdsModel>();
-        String query = "SELECT * FROM "+TABLE_MYADS;
+        String query = "SELECT * FROM "+TABLE_MYADS+" ORDER BY "+KEY_CREATED_AT+" DESC";
 
         SQLiteDatabase db = this.getReadableDatabase();
 
