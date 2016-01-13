@@ -3,8 +3,6 @@ package app.com.example.lambertkamaro.kigalilife.Models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.security.Timestamp;
-import java.util.Date;
 
 /**
  * Created by Lambert.Kamaro on 1/5/2016.

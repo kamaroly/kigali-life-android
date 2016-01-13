@@ -1,8 +1,12 @@
 <resources>
-    <string name="app_name">Tigo Rwanda </string>
+    <string name="app_name">KigaliLife </string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_new_ad">New ad</string>
     <string name="welcome_message">Welcome to Kigali Life App</string>
+    <!-- TABS STRINGS -->
+    <string name="tab_ads">Ads</string>
+    <string name="tab_my_Ads">My ads</string>
+    <!-- END OF TABS STRING -->
     <string name="new_ad">Add new</string>
     <string name="action_new_ad">New add</string>
     <string name="action_profile">Profile</string>

@@ -3,13 +3,16 @@ package app.com.example.lambertkamaro.kigalilife.Models;
 /**
  * Created by Lambert.Kamaro on 1/5/2016.
  */
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.sql.Timestamp;
 import java.util.Date;
 
 /**
  * Created by Lambert.Kamaro on 1/5/2016.
  */
-public class MyAdsModel {
+public class MyAdsModel implements Parcelable {
 
     int id;
     String subject;
@@ -22,7 +25,7 @@ public class MyAdsModel {
     int is_reoccuring = 0;
     String created_at;
     String updated_at;
-
+    private int mData;
     // Constructors
     public  MyAdsModel(){
 
@@ -150,5 +153,34 @@ public class MyAdsModel {
     public String getUpdated_at() {
         return updated_at;
     }
+
+    /** SECTION FOR THE Parcelable METHODS IMPLEMENATIONS **/
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(mData);
+    }
+
+    public static final Parcelable.Creator<MyAdsModel> CREATOR
+            = new Parcelable.Creator<MyAdsModel>() {
+        public MyAdsModel createFromParcel(Parcel in) {
+            return new MyAdsModel(in);
+        }
+
+        public MyAdsModel[] newArray(int size) {
+            return new MyAdsModel[size];
+        }
+    };
+
+    /** recreate object from parcel */
+    private MyAdsModel(Parcel in) {
+        mData = in.readInt();
+    }
+
+    /** END OF SECTION FOR THE Parcelable METHODS IMPLEMENATIONS **/
 }
 
