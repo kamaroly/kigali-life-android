@@ -11,11 +11,17 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 
 import app.com.example.lambertkamaro.kigalilife.Adapters.FragmentTabPagerAdapter;
+import app.com.example.lambertkamaro.kigalilife.Helpers.DatabaseHelper;
 import app.com.example.lambertkamaro.kigalilife.R;
 import app.com.example.lambertkamaro.kigalilife.Services.SyncWithServerService;
 
 public class MainActivity extends ActionBarActivity {
     private ViewPager mPager;
+    /** Database helper **/
+    DatabaseHelper db;
+
+    /**  Movies json url **/
+    private static final String url = "http://kigalilifeweb.app/api/v1/ads";
 
     ActionBar mActionbar;
 
@@ -24,7 +30,6 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        this.startServices();
 
         /** Getting a reference to action bar of this activity */
         mActionbar = getSupportActionBar();
@@ -120,4 +125,8 @@ public class MainActivity extends ActionBarActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
+
+
 }

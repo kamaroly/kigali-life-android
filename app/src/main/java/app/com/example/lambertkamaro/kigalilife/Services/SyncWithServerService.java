@@ -15,14 +15,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Date;
-import java.util.List;
-
-import app.com.example.lambertkamaro.kigalilife.Controllers.AppController;
+import app.com.example.lambertkamaro.kigalilife.Controllers.KigaliLifeApplication;
 import app.com.example.lambertkamaro.kigalilife.Fragments.Fragment1;
 import app.com.example.lambertkamaro.kigalilife.Helpers.DatabaseHelper;
 import app.com.example.lambertkamaro.kigalilife.Models.AdModel;
-import app.com.example.lambertkamaro.kigalilife.Models.MyAdsModel;
 import app.com.example.lambertkamaro.kigalilife.Tasks.SendMailTask;
 
 public class SyncWithServerService extends Service {
@@ -33,7 +29,7 @@ public class SyncWithServerService extends Service {
     private static final String TAG = Fragment1.class.getSimpleName();
 
     /**  Movies json url **/
-    private static final String url = "http://api.androidhive.info/json/movies.json";
+    private static final String url = "http://kigalilifeweb.app/api/v1/ads";
     public SyncWithServerService() {
 
     }
@@ -71,18 +67,19 @@ public class SyncWithServerService extends Service {
                     @Override
                     public void onResponse(JSONArray response) {
 
+                        Log.e("Data",response.toString());
                         // Parsing json
                         for (int i = 0; i < response.length(); i++) {
                             try {
 
                                 JSONObject obj = response.getJSONObject(i);
                                 AdModel ad  = new AdModel();
-                                ad.setSubject(obj.getString("title"));
-                                ad.setBody(obj.getString("title") + obj.getString("title") + obj.getString("title"));
-                                ad.setMail_date(new Date().toString());
-                                ad.setMessage_id("23423423");
-                                ad.setOwner("kamaroly");
-                                ad.setFiles(obj.getString("image"));
+                                ad.setSubject(obj.getString("subject"));
+                                ad.setBody(obj.getString("body"));
+                                ad.setMail_date(obj.getString("time"));
+                                ad.setMessage_id(obj.getString("message_id"));
+                                ad.setOwner(obj.getString("owner"));
+                                ad.setFiles(obj.getString("attachments"));
                                 // adding ad to ads array
                                 db.createAd(ad);
 
@@ -104,7 +101,7 @@ public class SyncWithServerService extends Service {
         });
 
         // Adding request to request queue
-        AppController.getInstance().addToRequestQueue(adsRequest);
+        KigaliLifeApplication.getInstance().addToRequestQueue(adsRequest);
     }
 
 }

@@ -7,6 +7,9 @@ package app.com.example.lambertkamaro.kigalilife.Adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,12 +19,16 @@ import android.widget.TextView;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import app.com.example.lambertkamaro.kigalilife.Activities.AdDetailsActivity;
-import app.com.example.lambertkamaro.kigalilife.Controllers.AppController;
+import app.com.example.lambertkamaro.kigalilife.Controllers.KigaliLifeApplication;
+import app.com.example.lambertkamaro.kigalilife.Helpers.DatabaseHelper;
 import app.com.example.lambertkamaro.kigalilife.Models.AdModel;
 import app.com.example.lambertkamaro.kigalilife.R;
 
@@ -36,7 +43,7 @@ public class AdsListAdapter extends BaseAdapter {
     private LayoutInflater inflater;
     private List<AdModel> adItems;
     private ArrayList<AdModel> arraylist;
-    ImageLoader imageLoader = AppController.getInstance().getImageLoader();
+    ImageLoader imageLoader = KigaliLifeApplication.getInstance().getImageLoader();
 
     public AdsListAdapter(Activity activity, List<AdModel> adItems) {
         this.activity = activity;
@@ -64,40 +71,54 @@ public class AdsListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        if (inflater == null)
+        if (inflater == null) {
             inflater = (LayoutInflater) activity
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        if (convertView == null)
+        }
+        if (convertView == null) {
             convertView = inflater.inflate(R.layout.list_row, null);
+        }
 
-        if (imageLoader == null)
-            imageLoader = AppController.getInstance().getImageLoader();
+        if (imageLoader == null) {
+            imageLoader = KigaliLifeApplication.getInstance().getImageLoader();
+        }
+
         NetworkImageView thumbNail = (NetworkImageView) convertView
                 .findViewById(R.id.thumbnail);
-        TextView title = (TextView) convertView.findViewById(R.id.title);
-        TextView rating = (TextView) convertView.findViewById(R.id.rating);
-        TextView genre = (TextView) convertView.findViewById(R.id.genre);
-        TextView year = (TextView) convertView.findViewById(R.id.releaseYear);
+        TextView owner = (TextView) convertView.findViewById(R.id.owner);
+        TextView summary = (TextView) convertView.findViewById(R.id.summary);
+        TextView releaseDate = (TextView) convertView.findViewById(R.id.releaseDate);
 
         // getting movie data for the row
         AdModel ad = adItems.get(position);
 
-        // thumbnail image
-        thumbNail.setImageUrl(ad.getFiles(), imageLoader);
+        // thumbnail
+        String images = ad.getFiles();
+        String image = null;
+        try {
+            JSONArray arrayImages = new JSONArray(images);
+            if (arrayImages!= null && arrayImages.length() != 0){
+                image = arrayImages.get(0).toString();
+            }
+        }catch (JSONException e){
+            Log.e("ERROR OCCURED",e.getMessage());
+        }
 
-        // title
-        title.setText(ad.getSubject());
+        thumbNail.setBackgroundColor(Color.LTGRAY);
+        if (image !=null && !image.isEmpty()) {
+            thumbNail.setImageUrl(image, imageLoader);
+        }
+        // owner
+        owner.setText(ad.getOwner());
 
         // rating
-        rating.setText("Description: " + String.valueOf(ad.getBody()));
-
-        // genre
-        genre.setText(ad.getSubject());
-
+        String body = ad.getBody();
+        summary.setText(String.valueOf(body));
+        summary.setLines(1);
         // release year
-        year.setText(String.valueOf(ad.getMail_date()));
+        releaseDate.setText(String.valueOf(ad.getMail_date()));
 
-        // Listen for ListView add Click
+        final String  messageId = ad.getMessage_id();
         // Listen for ListView add Click
         convertView.setOnClickListener(new View.OnClickListener() {
 
@@ -105,20 +126,26 @@ public class AdsListAdapter extends BaseAdapter {
             public void onClick(View arg0) {
                 // Send single item click data to SingleItemView Class
                 Intent intent = new Intent(activity, AdDetailsActivity.class);
-                // Pass all data status
-                intent.putExtra("status","Test status");
-                // Pass all data name
-                intent.putExtra("name","Test description");
+                // Pass all data message id
+                intent.putExtra("message_id",messageId);
 
                 // Pass all data flag
                 // Start SingleItemView Class
                 activity.startActivity(intent);
+                activity.overridePendingTransition(R.anim.left_to_right, R.anim.exit);
             }
         });
 
         return convertView;
     }
 
+    public void updateAdsList(FragmentActivity application) {
+        // Get ads we  have in the db
+        DatabaseHelper db = new DatabaseHelper(application.getApplicationContext());
+        arraylist.clear();
+        arraylist.addAll(db.getAllAds());
+        notifyDataSetChanged();
+    }
     // Filter Class
     public void filter(String charText) {
         charText = charText.toLowerCase(Locale.getDefault());

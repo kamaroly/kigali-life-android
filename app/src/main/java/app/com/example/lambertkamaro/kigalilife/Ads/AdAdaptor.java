@@ -74,7 +74,7 @@ public class AdAdaptor extends BaseAdapter {
 
             holder.memberName = (TextView) convertView.findViewById(R.id.member_name);
             holder.profilePic = (ImageView) convertView.findViewById(R.id.profile_pic);
-            holder.status = (TextView) convertView.findViewById(R.id.status);
+            holder.status = (TextView) convertView.findViewById(R.id.subject);
             holder.contactType = (TextView) convertView.findViewById(R.id.contact_type);
 
             convertView.setTag(holder);

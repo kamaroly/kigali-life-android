@@ -104,12 +104,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_SUBJECT,ad.getSubject());
         values.put(KEY_BODY,ad.getBody());
-        values.put(KEY_FILES,ad.getFiles());
-        values.put(KEY_OWNER,ad.getOwner());
+        values.put(KEY_FILES, ad.getFiles());
+        values.put(KEY_OWNER, ad.getOwner());
         values.put(KEY_MESSAGE_ID, ad.getMessage_id());
         values.put(KEY_MAIL_DATE, ad.getMail_date());
-        values.put(KEY_CREATED_AT,getDateTime());
-        values.put(KEY_UPDATED_AT,getDateTime());
+        values.put(KEY_CREATED_AT, getDateTime());
+        values.put(KEY_UPDATED_AT, getDateTime());
 
         // insert row
         long ad_id = db.insert(TABLE_ADS, null, values);
@@ -127,6 +127,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             if (results.moveToFirst()) {
                 do {
                     this.deleteAd(results.getInt(results.getColumnIndex(KEY_ID)));
+                    Log.e("Deleted AD WITH ID : ",results.getString(results.getColumnIndex(KEY_ID)));
                 } while (results.moveToNext());
             }
         }
@@ -160,10 +161,99 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return ad;
     }
 
+    /** Find single AD **/
+    public AdModel getAdByMessageId(String messageId){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM "+TABLE_ADS +" WHERE "+KEY_MESSAGE_ID+" = "+messageId+" ORDER BY "+KEY_CREATED_AT+" DESC";
+
+        Cursor results = db.rawQuery(query, null);
+
+        // if we found something then shift cursor
+        if (results!=null){
+            results.moveToFirst();
+        }
+        // Add information to the model
+        AdModel ad = new AdModel();
+        ad.setId(results.getInt(results.getColumnIndex(KEY_ID)));
+        ad.setSubject(results.getString(results.getColumnIndex(KEY_SUBJECT)));
+        ad.setBody(results.getString(results.getColumnIndex(KEY_BODY)));
+        ad.setMail_date(results.getString(results.getColumnIndex(KEY_MAIL_DATE)));
+        ad.setMessage_id(results.getString(results.getColumnIndex(KEY_MESSAGE_ID)));
+        ad.setOwner(results.getString(results.getColumnIndex(KEY_OWNER)));
+        ad.setFiles(results.getString(results.getColumnIndex(KEY_FILES)));
+        ad.setCreated_at(results.getString(results.getColumnIndex(KEY_CREATED_AT)));
+        ad.setCreated_at(results.getString(results.getColumnIndex(KEY_UPDATED_AT)));
+
+        return ad;
+    }
+
+    /**
+     * Get the latest Id in the database
+     * @return
+     */
+    public String getLatestAdId(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT "+KEY_MESSAGE_ID+" FROM " + TABLE_ADS + " ORDER BY "+KEY_MESSAGE_ID+" DESC LIMIT 1 ";
+
+        Cursor results = db.rawQuery(query, null);
+
+        // if we found something then shift cursor
+        if (results!=null){
+            results.moveToFirst();
+        }
+        try
+        {
+            String latestId = results.getString(results.getColumnIndex(KEY_MESSAGE_ID));
+            Log.e("LATEST ID IS :",latestId);
+            if (latestId.toString().isEmpty()){
+                return "0";
+            }
+
+            return latestId;
+        }
+        catch (Exception e){
+            Log.e("Error in DATABASE getlatestId method : ",e.getMessage());
+
+            return "0";
+        }
+    }
+    /**
+     * Determine if an ad exist by its ID
+     * @param messageId
+     * @return
+     */
+    public Boolean adExists(String messageId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_ADS + " WHERE " + KEY_MESSAGE_ID + " = " + messageId;
+        Cursor results = db.rawQuery(query, null);
+        return results.getCount() > 0;
+    }
+
+    /**
+     * Get the number of the ads we have on this device
+     * @return
+     */
+    public Integer adsCount(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT count(1) FROM " + TABLE_ADS;
+        Cursor results = db.rawQuery(query, null);
+        return results.getCount();
+    }
+    /**
+     * Determine if an ad exist by its ID
+     * @return
+     */
+    public Boolean hasAds() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_ADS + " LIMIT 10";
+        Cursor results = db.rawQuery(query, null);
+        return results.getCount() > 0;
+    }
+
     /** Get all ads **/
     public List<AdModel> getAllAds(){
         List<AdModel> ads = new ArrayList<AdModel>();
-        String query = "SELECT * FROM "+TABLE_ADS+" ORDER BY "+KEY_CREATED_AT+" DESC";
+        String query = "SELECT * FROM "+TABLE_ADS+" ORDER BY "+KEY_ID+" DESC";
 
         SQLiteDatabase db = this.getReadableDatabase();
 

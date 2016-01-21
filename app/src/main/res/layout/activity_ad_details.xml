@@ -1,25 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".Activities.AdDetailsActivity">
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:id="@+id/ad_details"
+    android:padding="0dp" >
     <TextView
-        android:layout_width="match_parent"
+        android:id="@+id/member_name"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/detailTitle"/>
+        android:layout_marginTop="10dp"
+        android:paddingBottom="1dp"
+        android:singleLine="true"
+        android:maxLength="15"
+        android:textStyle="bold"
+        android:paddingRight="8dp"
+
+        android:textSize="16sp" />
 
     <TextView
-        android:layout_width="match_parent"
+        android:id="@+id/body"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:id="@+id/detailBody"
-        android:layout_below="@+id/detailTitle"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        style="@style/TextAppearance.AppCompat.SearchResult.Title" />
+        android:layout_below="@+id/member_name"
+        android:text="txt"
+        android:ellipsize="end"
+        android:paddingRight="24dp"
+        android:textSize="14sp" />
+
+    <!-- image views -->
+    <GridView
+        android:id="@+id/gridView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/body"
+        android:layout_margin="5dp"
+        android:columnWidth="100dp"
+        android:drawSelectorOnTop="true"
+        android:gravity="center"
+        android:numColumns="auto_fit"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="5dp"
+        android:focusable="true"
+        android:clickable="true"/>
+
+
 </RelativeLayout>

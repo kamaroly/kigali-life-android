@@ -18,14 +18,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.NetworkImageView;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import app.com.example.lambertkamaro.kigalilife.Activities.AdDetailsActivity;
-import app.com.example.lambertkamaro.kigalilife.Controllers.AppController;
+import app.com.example.lambertkamaro.kigalilife.Controllers.KigaliLifeApplication;
 import app.com.example.lambertkamaro.kigalilife.Helpers.StringHelpers;
 import app.com.example.lambertkamaro.kigalilife.Models.MyAdsModel;
 import app.com.example.lambertkamaro.kigalilife.R;
@@ -43,7 +42,7 @@ public class MyAdsListAdapter extends BaseAdapter {
     private ArrayList<MyAdsModel> arrayList;
     ArrayList<String> attachmentFile = new ArrayList<String>();
 
-    ImageLoader imageLoader = AppController.getInstance().getImageLoader();
+    ImageLoader imageLoader = KigaliLifeApplication.getInstance().getImageLoader();
 
     public MyAdsListAdapter(Activity activity, List<MyAdsModel> adItems) {
         this.activity = activity;
@@ -78,12 +77,12 @@ public class MyAdsListAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.list_my_ads_row, null);
 
         if (imageLoader == null)
-            imageLoader = AppController.getInstance().getImageLoader();
+            imageLoader = KigaliLifeApplication.getInstance().getImageLoader();
         ImageView thumbNail = (ImageView) convertView.findViewById(R.id.thumbnail);
-        TextView title = (TextView) convertView.findViewById(R.id.title);
-        TextView rating = (TextView) convertView.findViewById(R.id.rating);
+        TextView title = (TextView) convertView.findViewById(R.id.owner);
+        TextView rating = (TextView) convertView.findViewById(R.id.summary);
         TextView genre = (TextView) convertView.findViewById(R.id.genre);
-        TextView year = (TextView) convertView.findViewById(R.id.releaseYear);
+        TextView year = (TextView) convertView.findViewById(R.id.releaseDate);
 
         // getting movie data for the row
         MyAdsModel ad = adItems.get(position);

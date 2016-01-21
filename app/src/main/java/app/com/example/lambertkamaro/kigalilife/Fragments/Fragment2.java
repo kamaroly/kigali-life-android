@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,21 +23,10 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.JsonArrayRequest;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import app.com.example.lambertkamaro.kigalilife.Adapters.MyAdsListAdapter;
-import app.com.example.lambertkamaro.kigalilife.Controllers.AppController;
 import app.com.example.lambertkamaro.kigalilife.Helpers.DatabaseHelper;
 import app.com.example.lambertkamaro.kigalilife.Models.MyAdsModel;
 import app.com.example.lambertkamaro.kigalilife.R;
@@ -201,6 +191,8 @@ public class Fragment2 extends Fragment {
 
     private void openSearchBar(String queryText) {
 
+        try
+        {
         // Set custom view on action bar.
         actionBar.setDisplayShowCustomEnabled(true);
         actionBar.setCustomView(R.layout.search_bar);
@@ -209,11 +201,15 @@ public class Fragment2 extends Fragment {
         searchEditText = (EditText) actionBar.getCustomView().findViewById(R.id.etSearch);
         searchEditText.addTextChangedListener(new SearchWatcher());
         searchEditText.setText(queryText);
-        searchEditText.requestFocus();
+
 
         // Change search icon accordingly.
         searchAction.setIcon(iconCloseSearch);
         searchOpened = true;
+        }
+        catch (Exception e){
+            Log.e("Fragment 1 Error:",e.getMessage());
+        }
 
     }
 
