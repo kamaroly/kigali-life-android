@@ -22,6 +22,17 @@
         android:layout_toRightOf="@+id/thumbnail"
         android:textSize="@dimen/title"
         android:textStyle="bold" />
+    <!-- Release date -->
+    <TextView
+        android:id="@+id/releaseDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:gravity="top|right"
+        android:layout_toRightOf="@+id/owner"
+        android:textColor="@color/year"
+        android:textSize="@dimen/year" />
 
     <!-- ad summary -->
     <TextView
@@ -31,18 +42,10 @@
         android:layout_below="@id/owner"
         android:layout_marginTop="1dip"
         android:layout_toRightOf="@+id/thumbnail"
+        android:maxLines="3"
         android:textSize="@dimen/rating" />
 
 
-    <!-- Release Year -->
-    <TextView
-        android:id="@+id/releaseDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_toRightOf="@+id/owner"
-        android:textColor="@color/year"
-        android:textSize="@dimen/year" />
+
 
 </RelativeLayout>

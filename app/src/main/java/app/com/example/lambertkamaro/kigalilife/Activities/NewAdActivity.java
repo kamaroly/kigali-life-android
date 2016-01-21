@@ -80,11 +80,13 @@ public class NewAdActivity extends ActionBarActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_ad);
-
+        /**Show add button in the actionBar */
+        getActionBar().setDisplayHomeAsUpEnabled(true);
         // Initiating our DATABASE HELPER
         db = new DatabaseHelper(getApplicationContext());
 
-        this.addBackButtonInActionBar();
+
+
         this.newAdManager();
     }
 
@@ -273,7 +275,10 @@ public class NewAdActivity extends ActionBarActivity{
         //noinspection SimplifiableIfStatement
         switch (id) {
             case android.R.id.home:
-                onBackPressed();
+                Intent newAd = new Intent(NewAdActivity.this,MainActivity.class);
+                startActivity(newAd);
+                finish();
+                overridePendingTransition(R.anim.left_to_right, R.anim.exit);
                 return true;
             case R.id.action_attachment:
                 selectImage();
@@ -293,11 +298,5 @@ public class NewAdActivity extends ActionBarActivity{
         attachmentFile.clear();
         imageAdaptor.notifyDataSetChanged();
     }
-    /**
-     * Show add button in the actionBar
-     */
-    public  void addBackButtonInActionBar(){
-        ActionBar actionBar = getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-    }
+
 }

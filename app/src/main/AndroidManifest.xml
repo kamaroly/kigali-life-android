@@ -30,6 +30,9 @@
         <activity
             android:name=".Activities.AdDetailsActivity"
             android:label="@string/title_activity_ad_details" />
+        <activity
+            android:name=".Activities.ImageViewerActivity" />
+
 
         <service
             android:name=".Services.SyncWithServerService"

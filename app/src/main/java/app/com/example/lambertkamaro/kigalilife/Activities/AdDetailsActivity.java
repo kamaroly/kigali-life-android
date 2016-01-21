@@ -86,10 +86,6 @@ public class AdDetailsActivity extends ActionBarActivity {
     }
 
 
-    public static String convertDate(String dateInMilliseconds,String dateFormat) {
-        return DateFormat.format(dateFormat, Long.parseLong(dateInMilliseconds)).toString();
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -100,7 +96,10 @@ public class AdDetailsActivity extends ActionBarActivity {
         //noinspection SimplifiableIfStatement
         switch (id) {
             case android.R.id.home:
-                onBackPressed();
+                Intent newAd = new Intent(AdDetailsActivity.this,MainActivity.class);
+                startActivity(newAd);
+                finish();
+                overridePendingTransition(R.anim.left_to_right, R.anim.exit);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

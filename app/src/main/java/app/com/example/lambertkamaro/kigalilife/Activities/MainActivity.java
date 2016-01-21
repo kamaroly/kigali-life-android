@@ -97,12 +97,6 @@ public class MainActivity extends ActionBarActivity {
         mActionbar.addTab(tab);
     }
 
-    /** MAKE SURE OUR SERVICES ARE RUNNING **/
-    private void startServices() {
-        /** START SERVICE TO LOAD  ADS **/
-        startService(new Intent(getBaseContext(),SyncWithServerService.class));
-
-    }
 
     /** OPTIONS MENU SECTION **/
     @Override
@@ -117,6 +111,7 @@ public class MainActivity extends ActionBarActivity {
             case R.id.action_new_add:
                 Intent newAd = new Intent(MainActivity.this,NewAdActivity.class);
                 startActivity(newAd);
+                overridePendingTransition(R.anim.right_to_left, R.anim.exit);
                 return true;
             case android.R.id.home:
                 onBackPressed();

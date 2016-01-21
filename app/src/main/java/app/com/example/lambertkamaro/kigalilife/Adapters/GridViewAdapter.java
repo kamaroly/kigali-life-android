@@ -4,9 +4,10 @@ package app.com.example.lambertkamaro.kigalilife.Adapters;
  * Created by Lambert.Kamaro on 1/21/2016.
  */
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,12 +18,12 @@ import com.android.volley.toolbox.NetworkImageView;
 
 import java.util.List;
 
+import app.com.example.lambertkamaro.kigalilife.Activities.ImageViewerActivity;
 import app.com.example.lambertkamaro.kigalilife.Controllers.KigaliLifeApplication;
-import app.com.example.lambertkamaro.kigalilife.Models.AdModel;
 import app.com.example.lambertkamaro.kigalilife.R;
 
 public class GridViewAdapter  extends BaseAdapter {
-    private Context mContext;
+    private Activity activity;
 
     // Keep all Images in array
     public List<String> thumbnails ;
@@ -32,10 +33,11 @@ public class GridViewAdapter  extends BaseAdapter {
     private LayoutInflater inflater;
     ImageLoader imageLoader = KigaliLifeApplication.getInstance().getImageLoader();
     // Constructor
-    public GridViewAdapter(Context c,List<String> images){
-        mContext = c;
+    public GridViewAdapter(Activity activity,List<String> images){
+        this.activity = activity;
         thumbnails = images;
     }
+
 
     @Override
     public int getCount() {
@@ -56,7 +58,7 @@ public class GridViewAdapter  extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         if (inflater == null) {
-            inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.grid_item_layout, null);
@@ -65,15 +67,27 @@ public class GridViewAdapter  extends BaseAdapter {
             imageLoader = KigaliLifeApplication.getInstance().getImageLoader();
         }
 
-        if (!thumbnails.isEmpty()) {
             NetworkImageView thumbNail = (com.android.volley.toolbox.NetworkImageView) convertView
                     .findViewById(R.id.grid_item_image);
 
             // getting movie data for the row
-            thumbNail.setBackgroundColor(Color.LTGRAY);
-            String image = thumbnails.get(position);
-            thumbNail.setImageUrl(image, imageLoader);
-        }
+            final String url = thumbnails.get(position);
+            thumbNail.setImageUrl(url, imageLoader);
+
+        // Listen for ListView add Click
+        convertView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                // Send single item click data to SingleItemView Class
+                Intent intent = new Intent(activity, ImageViewerActivity.class);
+                // Pass all data url
+                intent.putExtra("url", url);
+                // Start SingleItemView Class
+                activity.startActivity(intent);
+                activity.overridePendingTransition(R.anim.right_to_left, R.anim.exit);
+            }
+        });
         return convertView;
     }
 }

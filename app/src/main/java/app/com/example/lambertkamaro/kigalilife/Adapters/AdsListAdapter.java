@@ -50,7 +50,10 @@ public class AdsListAdapter extends BaseAdapter {
         this.adItems = adItems;
 
         this.arraylist = new ArrayList<AdModel>();
-        this.arraylist.addAll(adItems);
+
+        if (!this.adItems.isEmpty()) {
+            this.arraylist.addAll(adItems);
+        }
     }
 
     @Override
@@ -132,20 +135,13 @@ public class AdsListAdapter extends BaseAdapter {
                 // Pass all data flag
                 // Start SingleItemView Class
                 activity.startActivity(intent);
-                activity.overridePendingTransition(R.anim.left_to_right, R.anim.exit);
+                activity.overridePendingTransition(R.anim.right_to_left, R.anim.exit);
             }
         });
 
         return convertView;
     }
 
-    public void updateAdsList(FragmentActivity application) {
-        // Get ads we  have in the db
-        DatabaseHelper db = new DatabaseHelper(application.getApplicationContext());
-        arraylist.clear();
-        arraylist.addAll(db.getAllAds());
-        notifyDataSetChanged();
-    }
     // Filter Class
     public void filter(String charText) {
         charText = charText.toLowerCase(Locale.getDefault());
